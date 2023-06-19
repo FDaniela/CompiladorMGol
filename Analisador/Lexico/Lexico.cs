@@ -1,8 +1,6 @@
-﻿using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Reflection.PortableExecutable;
-using System.Text;
+﻿using System.Text;
 using CompiladorMGol.Analisador.Auxiliaries;
+using CompiladorMGol.Analisador.Exceptions;
 
 namespace CompiladorMGol.Analisador.Lexico
 {
@@ -11,188 +9,208 @@ namespace CompiladorMGol.Analisador.Lexico
         private StreamReader reader;
         public bool ParaScanner { get; set; }
         public int caracter;
-        long tamanhoArquivo, posicao, buffer;
+        long tamanhoArquivo, posicao;
         private TabelaDeSimbolos tabelaDeSimbolos = new();
         private TabelaDeTrasicao tabelaDeTrasicao = new();
         private Alfabeto alfabeto = new();
-        public static int Erro = 0, linha = 1, coluna = 0;
+        public static int linha = 1, coluna = 0;
         string palavraAtual = "", palavraBuffer = "";
-        //char caractere;
-        bool ignorar, lit=false;
-        bool teste;
+        bool ignorar, lit = false, com=false;
+
 
         public Lexico()
         {
-
             //ImprimeTabelaDeSimbolos();
             //ImprimeTabelaDeTransicao();
-            
         }
 
         public Token Lit()
         {
             //string = 
-            
+
             return NovoToken("\"Digite B:\"");
         }
-
-
-        public Token Scanner()
+        private void LeituraArquivo()
         {
 
             try
             {
 
-                StringBuilder caracterArquivo = new StringBuilder();
-                var arquivo = "/home/danfer/Projetos/CompiladorBackup/CompiladorMGol/Analisador/Resource/Fonte0.alg";
+                //var nomeArquivoCompleto = "CompiladorMGol.Analisador.Resource.Codes.Fonte0.alg";
+                //var assembly = Assembly.GetExecutingAssembly();
+                //var resourceStream = assembly.GetManifestResourceStream(nomeArquivoCompleto);
+                //system.Console.WriteLine(resourceStream.ToString());
+
+                var arquivo = "/home/danfer/Projetos/CompiladorMGol/Analisador/Resource/Codes/Fonte.alg";
                 reader = new StreamReader(arquivo);
-                tamanhoArquivo = reader.BaseStream.Length;
-                reader.BaseStream.Position = posicao;
-               // Console.WriteLine("tam= " + tamanhoArquivo);
-
-               
 
 
-                while (posicao < tamanhoArquivo)
-               // while (!reader.EndOfStream)
+
+            }
+            catch (Exception)
+            {
+                throw new LeituraArquivoExpection();
+                // ImprimeErroLexico("Erro na leitura do arquivo:" + e + "\n");
+            }
+        }
+
+        public Token Scanner()
+        {
+
+            LeituraArquivo();
+
+            StringBuilder caracterArquivo = new StringBuilder();
+            tamanhoArquivo = reader.BaseStream.Length;
+            reader.BaseStream.Position = posicao;
+
+            while (posicao <= tamanhoArquivo)
+            {
+                
+
+                char caractere = (char)reader.Read();
+                
+                //System.Console.WriteLine($"LOG: Caractere lido = {caractere}");
+                //System.Console.WriteLine($"LOG: Posicao = {posicao}");
+
+                if (reader.EndOfStream)
                 {
-                  
-                    char caractere = (char)reader.Read();
-                  // Console.WriteLine(posicao+"/"+tamanhoArquivo+"   =   "+caractere);
-
-                    if (reader.EndOfStream)
+                    if (palavraAtual.Length > 0)
                     {
-                        if (palavraAtual.Length > 0)
-                        {
-                            palavraAtual += caractere;
-                            return NovoToken(palavraAtual);
-                        }
-                        ParaScanner = true;
-                        return NovoToken("EOF"); ;
+                        palavraAtual += caractere;
+                        return NovoToken(palavraAtual);
                     }
+                    ParaScanner = true;
+                    return NovoToken("EOF"); ;
+                }
 
-
-                    
-                    
-
-                    if (lit)
-                    {
-                        palavraBuffer += caractere;
-                        if (caractere == alfabeto.ASPAS_DUPLAS)
-                        {
-                            // Console.WriteLine(palavraBuffer);
-                            
-                            lit = false;
-                            palavraAtual = "";
-                            posicao++;
-                            return NovoToken(palavraBuffer);
-
-                        }
-                        posicao++;
-                        continue;
-                    }
+                if (lit)
+                {
+                    palavraBuffer += caractere;
                     if (caractere == alfabeto.ASPAS_DUPLAS)
                     {
-                        palavraBuffer += caractere;
-                        lit = !lit;
+
+                        lit = false;
+                        palavraAtual = "";
                         posicao++;
-                        continue;
+                        return NovoToken(palavraBuffer);
+
                     }
-                    if (ignorar)
-                    {
-                        // palavraBuffer += caractere;
-                        if (caractere == alfabeto.FECHA_CHAVES) ignorar = false;
+                    posicao++;
+                    continue;
+                }
+                if (caractere == alfabeto.ASPAS_DUPLAS)
+                {
+                    palavraBuffer += caractere;
+                    lit = !lit;
+                    posicao++;
+                    continue;
+                }
+                if (ignorar)
+                {
+
+                    palavraBuffer += caractere;
+
+                    if(!alfabeto.CaracterValido(caractere)){
+
+                        ImprimeErroLexico();
+                        com=true;
                         posicao++;
-                        continue;
-                    }
-                    if (caractere == alfabeto.ABRE_CHAVES)
-                    {
+                        return ErroToken(caractere.ToString());
 
-                        ignorar = true;
-                        posicao++;
-                        continue;
-                    }
-
-
-
-
-                    if (alfabeto.CaracterValido(caractere) && !ignorar && !teste)
-                    {
-                     
-                        Contagem(caractere);
-                        
-                       
-                        if (char.IsWhiteSpace(caractere) || alfabeto.CaractereEspecial(caractere))// || (alfabeto.CaractereEspecial(caractere) && Char.IsLetterOrDigit((char)reader.Peek())))
-                        {
-
-                            if (!string.IsNullOrEmpty(palavraAtual)){
-                                return NovoToken(palavraAtual);
-                            } 
-                            if (alfabeto.CaractereEspecial(caractere) && alfabeto.CaractereEspecial((char)reader.Peek()) )
-                            {
-                                palavraAtual += caractere.ToString();
-                                palavraAtual += (char)reader.Peek();
-                                posicao++;
-                            }
-
-                            else if (alfabeto.CaractereEspecial(caractere) && (Char.IsLetterOrDigit((char)reader.Peek()) || Char.IsWhiteSpace((char)reader.Peek())))
-                            {
-                                posicao++;
-                                return NovoToken(caractere.ToString());
-                            }
-
-                           
-
-
-
-                        }
-
-                        else
-                        {
-                           // teste = !teste;
-                            palavraAtual += caractere;
-
-                        }
                     }
                    
+                    if (caractere == alfabeto.FECHA_CHAVES)
+                    {
+                        
+                        ignorar = false;
+                        if(!com) ImprimeComentario(palavraBuffer);
+                        posicao++;
+                        
+                    }
+
+                    posicao++;
+                    continue;
+                }
+                if (caractere == alfabeto.ABRE_CHAVES)
+                {
+                    palavraBuffer += caractere;
+                    ignorar = true;
+                    com = false;
+                    posicao++;
+                    continue;
+                }
+
+                if (alfabeto.CaracterValido(caractere) && !ignorar)
+                {
+
+                    Contagem(caractere);
+
+
+                    if (char.IsWhiteSpace(caractere) || alfabeto.CaractereEspecial(caractere))
+                    {
+
+                        if (!string.IsNullOrEmpty(palavraAtual))
+                        {
+                            return NovoToken(palavraAtual);
+                        }
+                        if (alfabeto.CaractereEspecial(caractere) && alfabeto.CaractereEspecial((char)reader.Peek()))
+                        {
+                            palavraAtual += caractere.ToString();
+                            palavraAtual += (char)reader.Peek();
+                            posicao++;
+                        }
+
+                        else if (alfabeto.CaractereEspecial(caractere) && (Char.IsLetterOrDigit((char)reader.Peek()) || Char.IsWhiteSpace((char)reader.Peek())))
+                        {
+                            posicao++;
+                            return NovoToken(caractere.ToString());
+                        }
+
+
+
+
+
+                    }
 
                     else
                     {
-
-                        Console.Error.WriteLine($"ERRO léxico - Caractere inválido na linguagem. Linha {linha}, coluna {(posicao+1)/linha}.");
+                        // teste = !teste;
+                        palavraAtual += caractere;
 
                     }
-                   // Console.WriteLine(palavraBuffer);
+                }
+
+                else
+                {
+
+                    palavraAtual += caractere;
+                    ImprimeErroLexico();
                     posicao++;
+                    return ErroToken(palavraAtual);
 
                 }
 
-                reader.Close();
+                posicao++;
 
             }
-            catch (Exception e)
-            {
-                //throw new NotImplementedException("Erro na leitura do arquivo:" + e + "\n");
-                ImprimeErrolexico("Erro na leitura do arquivo:" + e + "\n");
-            }
-            throw new NotImplementedException("Deu ruim no retorno do Scanner");
+
+            reader.Close();
+
+            throw new RetornoScannerExpection();
         }
 
-        private string TokenJaExiste(string lexema)
+        private Token? ExisteToken(string lexema)
         {
 
+            var tokenTemporario = tabelaDeSimbolos.BuscarToken(lexema);
 
-            var tokenTemporario = new Token(lexema, lexema, lexema);
-
-            var existe = tabelaDeSimbolos.BuscarToken(tokenTemporario);
-
-            if (existe != null)
+            if (tokenTemporario == null)
             {
-                return lexema;
+                return null;
             }
             else
             {
-                return "null";
+                return tokenTemporario;
             }
 
         }
@@ -207,9 +225,11 @@ namespace CompiladorMGol.Analisador.Lexico
                 return new Token("EOF", lexema, "Nulo");
             }
 
-            if (TokenJaExiste(lexema) != "null")
+            Token? novoToken = ExisteToken(lexema);
+
+            if (!(ExisteToken(lexema) == null))
             {
-                return new Token(lexema, lexema, lexema);
+                return novoToken;
             }
 
             switch (tabelaDeTrasicao.EstadoDeTransicao(lexema, 0, 1))
@@ -221,7 +241,11 @@ namespace CompiladorMGol.Analisador.Lexico
                 case 6:
                     return new Token("Num", lexema, "real");
                 case 8:
-                    return new Token("id", lexema, "Nulo");
+                    {
+                        novoToken = new Token("id", lexema, "Nulo");
+                        tabelaDeSimbolos.InserirToken(novoToken);
+                        return novoToken;
+                    }
                 case 7:
                     return new Token("Vir", lexema, "Nulo");
                 case 19:
@@ -240,16 +264,27 @@ namespace CompiladorMGol.Analisador.Lexico
                     return new Token("OPR", lexema, "Nulo");
                 case 14:
                     return new Token("OPR", lexema, "Nulo");
+                case 10:{
+                    return Scanner();
+                   // return new Token("Comentário", lexema, "Nulo");
+                }
                 case 21:
                     return new Token("Lit", lexema, "Nulo");
-                case 99:
-                    return new Token("transição não existe", lexema, "Nulo");
-                case 333:
-                    return new Token("craactere não reconhecido", lexema, "Nulo");
+                case 99: //trasição não existe
+                {
+                    return new Token("ERRO", lexema, "Nulo");
+                }
+                //throw new NotImplementedException($"Erro encontrado - + {lexema}");
+                    
+                case 0:
+                    return Scanner();
+
+                    //throw new NotImplementedException("caractere não reconhecido");
+                    //return new Token("caractere não reconhecido", lexema, "Nulo");
 
             }
 
-            return new Token("---------", lexema, "Nulo");
+            throw new NovoTokenExpection();
 
         }
 
@@ -259,37 +294,57 @@ namespace CompiladorMGol.Analisador.Lexico
             if ('\n' == caractere)
             {
                 coluna = 0;
-               // Console.WriteLine(" pulou - " +coluna);
-                
                 linha++;
-            }
-            if ('\r' == caractere)
-            {
-                coluna--;
             }
             else
             {
-               coluna++;
+                coluna++;
             }
 
         }
 
-        public void ImprimeErrolexico(string msg)
+        private Token ErroToken(string lexema)
         {
-            Console.Error.WriteLine(msg);
+            palavraAtual = "";
+            palavraBuffer = "";
+            return new Token("ERRO", lexema, "Nulo");
+        }
+
+        public void ImprimeErroLexico()
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine($"ERRO LÉXICO - Caractere inválido para linguagem MGol.\tLinha {linha}, Coluna {coluna}.");
+            Console.ResetColor();
+        }
+
+        public void ImprimeComentario(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.Error.WriteLine($"COMENTÁRIO IGNORADO - {msg.PadRight(33)} Linha {linha}, Coluna {coluna}.");
+            Console.ResetColor();
         }
 
         public void ImprimeTabelaDeSimbolos()
         {
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("----------------     TABELA DE SIMBOLOS      ------------");
             Console.WriteLine();
             Console.WriteLine(tabelaDeSimbolos.ToString());
             Console.WriteLine("---------------------------------------------------------");
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.ResetColor();
         }
 
         public void ImprimeTabelaDeTransicao()
         {
+            Console.ForegroundColor = ConsoleColor.Yellow;
             tabelaDeTrasicao.ImprimirTabela();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.ResetColor();
         }
 
     }

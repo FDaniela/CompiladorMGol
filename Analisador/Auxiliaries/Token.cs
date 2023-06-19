@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace CompiladorMGol.Analisador.Auxiliaries
 {
     public class Token
@@ -19,6 +14,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
             Tipo = tipo;
         }
 
-        public override string ToString() => $"Classe: {Classe}, Lexema: {Lexema}, Tipo: {Tipo}";
+        public override string ToString() => 
+        $"Classe: {Classe.PadLeft(10)},\t Lexema: {Lexema.PadLeft(20)},\t Tipo: {Tipo.PadLeft(10)}";
     }
 }

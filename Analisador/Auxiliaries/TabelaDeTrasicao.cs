@@ -1,6 +1,4 @@
-﻿using System.Data.Common;
-using System.Xml;
-
+﻿
 namespace CompiladorMGol.Analisador.Auxiliaries
 {
     public class TabelaDeTrasicao
@@ -103,13 +101,14 @@ namespace CompiladorMGol.Analisador.Auxiliaries
 
         private void EstadoFinalComentario()
         {
+            // tabela[10, 10] = 9;
+             tabela[20, 1] = 9;
+            for(int i = 1; i < 31; i++)
+            {
+               tabela[i, 10] = 9;
+            }
+            
 
-            tabela[20, 1] = 9;
-            //for(int i = 1; i < 31; i++)
-            //{
-            //    tabela[i, 10] = 10;
-            //}
-            tabela[10, 10] = 9;
             tabela[21, 10] = 10;
 
         }
@@ -128,7 +127,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
         private void EstadoFinalLit()
         {
             tabela[28, 1] = 20;
-            tabela[10, 21] = 20;
+            //tabela[10, 21] = 20;
             
 
             for(int i = 1; i < 31; i++)
@@ -157,99 +156,42 @@ namespace CompiladorMGol.Analisador.Auxiliaries
 
         }
 
-        private int TratamentoDeComentário(string caractere, int index)
-        {
-            if (caractere[index] == alfabeto.FECHA_CHAVES) return 101; 
-            if (alfabeto.CaracterValido(caractere[index])){
-                TratamentoDeComentário(caractere, index +1);
-            }
-            return -1;
-        }
-
-
-        /// <summary>
-        /// ///////////////
-        /// </summary>
-        /// 
-
-        //public ExisteTransicao()
-        //{
-
-        //}
         public int ConsultarTransicao(int linha, int coluna)
         {
-          //  Console.WriteLine(linha +" "+ coluna);
             return tabela[linha, coluna];
         }
 
-
         public int EstadoDeTransicao(string caractere, int index, int estado)
         {
+
+            //System.Console.WriteLine($"LOG: {caractere} ,\t{index+1}-{estado}");
 
             int linha, coluna; 
             linha = LinhaDeTransicao(caractere[index]);
             coluna = ConsultarTransicao(linha, estado) + 1;
 
-            //Console.WriteLine("ES: " + caractere + ","+index+","+estado);
-           // Console.WriteLine("ES: " + caractere[index] +","+estado);
+           //System.Console.WriteLine($"LOG: {linha},{coluna}");
 
-            if (linha == 333)
+
+            if (linha==0)
             {
-                return 333;
+                return 0;
 
             }
-            // if (ConsultarTransicao(linha, estado) == -1) return -1;
-            // Console.WriteLine(caractere.Length);
+
             if (ConsultarTransicao(linha,estado) == -1)
             {
-                //Console.WriteLine("deu ruim!");
                 return 99;
             }
 
             if (index == caractere.Length -1 )
             {
-               // Console.WriteLine("ES: " + caractere + ","+index+","+estado);
-
-
-                //Console.WriteLine("cheuguei");
-                // Console.WriteLine(ConsultarTransicao(linha, estado));
                 return ConsultarTransicao(linha, estado);
             }
 
-            //Console.WriteLine("ES: " + caractere + "," + index + "," + estado);
             return EstadoDeTransicao(caractere, index + 1, coluna);
 
-
-            //return 99999;
-
-            //if (index == 0)
-            //{
-            //    coluna = 1;
-            //    return ConsultarTransicao(linha, coluna);
-            //}
-            //else
-            //{
-            //  //  estado = ConsultarTransicao(linha, coluna);
-            //    coluna = estado;
-            //    ConsultarTransicao(linha, coluna + 1) ;
-            //}
-            ////coluna;
-
-            //if(index<caractere.Length)
-            //{
-            //    EstadoDeTransicao(caractere, index + 1, ConsultarTransicao(linha, coluna));
-            //}
-
-         
-                    
-               //     EstadoDeTransicaoSimples(caracter[0]);
-          
-
-
-          //  return LinhaDeTransicao(caractere[index]);
-
         }
-
 
         public int LinhaDeTransicao(char caracter) {
 
@@ -297,10 +239,9 @@ namespace CompiladorMGol.Analisador.Auxiliaries
                 //--------------------------------
 
                 
-            return 333;
+            return 0;
 
         }
-      
 
         public void ImprimirTabela()
         {
@@ -308,7 +249,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
             {
                 for (int j = 1; j < tabela.GetLength(1); j++)
                     Console.Write(tabela[i, j].ToString().PadRight(5));
-                Console.WriteLine(); // Pular para a próxima linha após imprimir uma linha completa
+                Console.WriteLine();
             }
         }
 

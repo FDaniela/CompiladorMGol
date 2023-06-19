@@ -13,13 +13,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
 
         public TabelaDeSimbolos()
         {
-
-            // tokens = new Dictionary<string, Token>();
             PreencherTabelaComPalavrasReservadas();
-            // var teste = new Token("teste", "teste", "teste");
-            // InserirToken(teste);
-            //Console.WriteLine(BuscarToken(teste));
-            //BuscarToken(teste);
         }
 
         public void PreencherTabelaComPalavrasReservadas()
@@ -47,13 +41,13 @@ namespace CompiladorMGol.Analisador.Auxiliaries
             tokens.Add(t.Lexema, t);
         }
 
-        public Token? BuscarToken(Token t)
+        public Token? BuscarToken(string chave)
         {
-            if (tokens.ContainsKey(t.Lexema))
+            if (tokens.TryGetValue(chave, out Token token))
             {
-                return tokens[t.Lexema];
-                //return t;
+                return token;
             }
+
             return null;
         }
 
