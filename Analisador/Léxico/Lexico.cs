@@ -1,63 +1,36 @@
-﻿using System.Text;
+﻿using System.Reflection;
+using System.Text;
 using CompiladorMGol.Analisador.Auxiliaries;
 using CompiladorMGol.Analisador.Exceptions;
 
-namespace CompiladorMGol.Analisador.Lexico
+namespace CompiladorMGol.Analisador.Léxico
 {
     public class Lexico
     {
-        private StreamReader reader;
-        public bool ParaScanner { get; set; }
-        public int caracter;
-        long tamanhoArquivo, posicao;
+        private StreamReader? reader;
+        private ErrorLog log = new();
+        private Token token;
+
         private TabelaDeSimbolos tabelaDeSimbolos = new();
         private TabelaDeTrasicao tabelaDeTrasicao = new();
         private Alfabeto alfabeto = new();
-        public static int linha = 1, coluna = 0;
-        string palavraAtual = "", palavraBuffer = "";
-        bool ignorar, lit = false, com=false;
+        private Arquivo arquivo = new();
 
+        public bool ParaScanner { get; set; }
+        public int caracter, linha = 1, coluna = 0;
+        long tamanhoArquivo, posicao;
+        string palavraAtual = "", palavraBuffer = "";
+        bool ignorar, lit = false, com = false;
 
         public Lexico()
         {
-            //ImprimeTabelaDeSimbolos();
-            //ImprimeTabelaDeTransicao();
-        }
-
-        public Token Lit()
-        {
-            //string = 
-
-            return NovoToken("\"Digite B:\"");
-        }
-        private void LeituraArquivo()
-        {
-
-            try
-            {
-
-                //var nomeArquivoCompleto = "CompiladorMGol.Analisador.Resource.Codes.Fonte0.alg";
-                //var assembly = Assembly.GetExecutingAssembly();
-                //var resourceStream = assembly.GetManifestResourceStream(nomeArquivoCompleto);
-                //system.Console.WriteLine(resourceStream.ToString());
-
-                var arquivo = "/home/danfer/Projetos/CompiladorMGol/Analisador/Resource/Codes/Fonte.alg";
-                reader = new StreamReader(arquivo);
-
-
-
-            }
-            catch (Exception)
-            {
-                throw new LeituraArquivoExpection();
-                // ImprimeErroLexico("Erro na leitura do arquivo:" + e + "\n");
-            }
+            Scanner();
         }
 
         public Token Scanner()
         {
-
-            LeituraArquivo();
+            reader = arquivo.LeituraArquivo();
+            //LeituraArquivo();
 
             StringBuilder caracterArquivo = new StringBuilder();
             tamanhoArquivo = reader.BaseStream.Length;
@@ -65,10 +38,9 @@ namespace CompiladorMGol.Analisador.Lexico
 
             while (posicao <= tamanhoArquivo)
             {
-                
 
                 char caractere = (char)reader.Read();
-                
+
                 //System.Console.WriteLine($"LOG: Caractere lido = {caractere}");
                 //System.Console.WriteLine($"LOG: Posicao = {posicao}");
 
@@ -95,6 +67,11 @@ namespace CompiladorMGol.Analisador.Lexico
                         return NovoToken(palavraBuffer);
 
                     }
+                    else if (caractere == alfabeto.SALTO_DE_LINHA)
+                    {
+                        //ErrorLog.
+                        //System.Console.WriteLine("7777777777777777");
+                    }
                     posicao++;
                     continue;
                 }
@@ -110,22 +87,22 @@ namespace CompiladorMGol.Analisador.Lexico
 
                     palavraBuffer += caractere;
 
-                    if(!alfabeto.CaracterValido(caractere)){
-
-                        ImprimeErroLexico();
-                        com=true;
+                    if (!alfabeto.CaracterValido(caractere))
+                    {
+                        log.ImprimeErroLexico($"ERRO LÉXICO - Caractere inválido para linguagem MGol.\tLinha {linha}, Coluna {coluna}.");
+                        com = true;
                         posicao++;
                         return ErroToken(caractere.ToString());
 
                     }
-                   
+
                     if (caractere == alfabeto.FECHA_CHAVES)
                     {
-                        
+
                         ignorar = false;
-                        if(!com) ImprimeComentario(palavraBuffer);
+                        if (!com) ImprimeComentario(palavraBuffer);
                         posicao++;
-                        
+
                     }
 
                     posicao++;
@@ -152,29 +129,47 @@ namespace CompiladorMGol.Analisador.Lexico
                         if (!string.IsNullOrEmpty(palavraAtual))
                         {
                             return NovoToken(palavraAtual);
+
                         }
                         if (alfabeto.CaractereEspecial(caractere) && alfabeto.CaractereEspecial((char)reader.Peek()))
                         {
+
                             palavraAtual += caractere.ToString();
                             palavraAtual += (char)reader.Peek();
                             posicao++;
                         }
 
-                        else if (alfabeto.CaractereEspecial(caractere) && (Char.IsLetterOrDigit((char)reader.Peek()) || Char.IsWhiteSpace((char)reader.Peek())))
+
+
+                        // else if ((char)reader.Peek() == '.' &&
+                        //         (alfabeto.CaracterDigito(caractere))
+                        //         )
+                        // {
+                        //     System.Console.WriteLine("here");
+                        //     //System.Console.WriteLine(palavraAtual);
+                        //     palavraAtual += caractere.ToString();
+                        //     palavraAtual += (char)reader.Peek();
+                        //     posicao++;
+                        //    // 
+
+                        //    // posicao++;
+                        //    // return NovoToken(caractere.ToString());
+                        // }
+
+
+                        else if (alfabeto.CaractereEspecial(caractere) &&
+                                (char.IsLetterOrDigit((char)reader.Peek()) || char.IsWhiteSpace((char)reader.Peek()))
+                                )
                         {
                             posicao++;
                             return NovoToken(caractere.ToString());
                         }
 
-
-
-
-
                     }
 
                     else
                     {
-                        // teste = !teste;
+
                         palavraAtual += caractere;
 
                     }
@@ -184,7 +179,7 @@ namespace CompiladorMGol.Analisador.Lexico
                 {
 
                     palavraAtual += caractere;
-                    ImprimeErroLexico();
+                    log.ImprimeErroLexico($"ERRO LÉXICO - Caractere inválido para linguagem MGol.\tLinha {linha}, Coluna {coluna}.");
                     posicao++;
                     return ErroToken(palavraAtual);
 
@@ -220,17 +215,11 @@ namespace CompiladorMGol.Analisador.Lexico
             palavraAtual = "";
             palavraBuffer = "";
 
-            if (lexema.Equals("EOF"))
-            {
-                return new Token("EOF", lexema, "Nulo");
-            }
+            if (lexema.Equals("EOF")) return new Token("EOF", lexema, "Nulo");
 
-            Token? novoToken = ExisteToken(lexema);
+            Token? verificaToken = ExisteToken(lexema);
 
-            if (!(ExisteToken(lexema) == null))
-            {
-                return novoToken;
-            }
+            if (!(ExisteToken(lexema) == null)) return verificaToken;
 
             switch (tabelaDeTrasicao.EstadoDeTransicao(lexema, 0, 1))
             {
@@ -242,7 +231,7 @@ namespace CompiladorMGol.Analisador.Lexico
                     return new Token("Num", lexema, "real");
                 case 8:
                     {
-                        novoToken = new Token("id", lexema, "Nulo");
+                        Token novoToken = new Token("id", lexema, "Nulo");
                         tabelaDeSimbolos.InserirToken(novoToken);
                         return novoToken;
                     }
@@ -264,24 +253,19 @@ namespace CompiladorMGol.Analisador.Lexico
                     return new Token("OPR", lexema, "Nulo");
                 case 14:
                     return new Token("OPR", lexema, "Nulo");
-                case 10:{
-                    return Scanner();
-                   // return new Token("Comentário", lexema, "Nulo");
-                }
+                case 10:
+                    { //Comentário
+                        return Scanner();
+                    }
                 case 21:
                     return new Token("Lit", lexema, "Nulo");
                 case 99: //trasição não existe
-                {
-                    return new Token("ERRO", lexema, "Nulo");
-                }
-                //throw new NotImplementedException($"Erro encontrado - + {lexema}");
-                    
-                case 0:
+                    {
+                        throw new TransicaoException();
+                    }
+                case 404:
                     return Scanner();
-
-                    //throw new NotImplementedException("caractere não reconhecido");
-                    //return new Token("caractere não reconhecido", lexema, "Nulo");
-
+                    //throw new NotImplementedException("caractere não reconhecido pela linguagem MGol");
             }
 
             throw new NovoTokenExpection();

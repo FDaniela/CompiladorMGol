@@ -43,7 +43,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
 
         public Token? BuscarToken(string chave)
         {
-            if (tokens.TryGetValue(chave, out Token token))
+            if (tokens.TryGetValue(chave, out Token? token))
             {
                 return token;
             }
@@ -54,9 +54,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
         public void AtualizarToken(Token t)
         {
             if (tokens.ContainsKey(t.Lexema))
-            {
                 tokens[t.Lexema] = t;
-            }
 
         }
 

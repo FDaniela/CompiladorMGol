@@ -102,12 +102,12 @@ namespace CompiladorMGol.Analisador.Auxiliaries
         private void EstadoFinalComentario()
         {
             // tabela[10, 10] = 9;
-             tabela[20, 1] = 9;
-            for(int i = 1; i < 31; i++)
+            tabela[20, 1] = 9;
+            for (int i = 1; i < 31; i++)
             {
-               tabela[i, 10] = 9;
+                tabela[i, 10] = 9;
             }
-            
+
 
             tabela[21, 10] = 10;
 
@@ -128,9 +128,9 @@ namespace CompiladorMGol.Analisador.Auxiliaries
         {
             tabela[28, 1] = 20;
             //tabela[10, 21] = 20;
-            
 
-            for(int i = 1; i < 31; i++)
+
+            for (int i = 1; i < 31; i++)
             {
                 tabela[i, 21] = 20;
             }
@@ -151,6 +151,8 @@ namespace CompiladorMGol.Analisador.Auxiliaries
             tabela[6, 2] = 4;
             tabela[6, 4] = 4;
 
+            tabela[10, 2] = 2;
+
             tabela[15, 5] = 5;
             tabela[16, 5] = 5;
 
@@ -164,81 +166,65 @@ namespace CompiladorMGol.Analisador.Auxiliaries
         public int EstadoDeTransicao(string caractere, int index, int estado)
         {
 
-            //System.Console.WriteLine($"LOG: {caractere} ,\t{index+1}-{estado}");
-
-            int linha, coluna; 
+            int linha, coluna;
             linha = LinhaDeTransicao(caractere[index]);
             coluna = ConsultarTransicao(linha, estado) + 1;
 
-           //System.Console.WriteLine($"LOG: {linha},{coluna}");
+            //System.Console.WriteLine($"LOG: {caractere} ,\t{index+1}-{estado}");
+            //System.Console.WriteLine($"LOG: {linha},{coluna}");
 
+            if (linha == 0) return 404;
 
-            if (linha==0)
-            {
-                return 0;
+            if (ConsultarTransicao(linha, estado) == -1) return 99;
 
-            }
-
-            if (ConsultarTransicao(linha,estado) == -1)
-            {
-                return 99;
-            }
-
-            if (index == caractere.Length -1 )
-            {
-                return ConsultarTransicao(linha, estado);
-            }
+            if (index == caractere.Length - 1) return ConsultarTransicao(linha, estado);
 
             return EstadoDeTransicao(caractere, index + 1, coluna);
 
         }
 
-        public int LinhaDeTransicao(char caracter) {
+        public int LinhaDeTransicao(char caracter)
+        {
 
-            if (caracter == alfabeto.ESPACO) return 1; 
+            if (caracter == alfabeto.ESPACO) return 1;
             if (caracter == '\r') return 1;
+
             if (alfabeto.CaracterDigito(caracter)) return 4;
             if (alfabeto.CaracterLetra(caracter)) return 5;
-            
+
             if (caracter == alfabeto.VIRGULA) return 7;
-                if (caracter == alfabeto.PONTO_E_VIRGULA) return 8;
-                if (caracter == alfabeto.DOIS_PONTOS) return 9;
+            if (caracter == alfabeto.PONTO_E_VIRGULA) return 8;
+            if (caracter == alfabeto.DOIS_PONTOS) return 9;
 
-               if (caracter == alfabeto.PONTO) return 10;
-               if (caracter == alfabeto.EXCLAMACAO) return 11;
-                if (caracter == alfabeto.INTEROGACAO) return 12;
-                if (caracter == alfabeto.BARRA_INVERTIDA) return 13;
+            if (caracter == alfabeto.PONTO) return 10;
+            if (caracter == alfabeto.EXCLAMACAO) return 11;
+            if (caracter == alfabeto.INTEROGACAO) return 12;
+            if (caracter == alfabeto.BARRA_INVERTIDA) return 13;
 
-                if (caracter == alfabeto.ASTERISTICO) return 14;
-                if (caracter == alfabeto.MAIS) return 15;
-                if (caracter == alfabeto.MENOS) return 16;
-                if (caracter == alfabeto.BARRA) return 17;
+            if (caracter == alfabeto.ASTERISTICO) return 14;
+            if (caracter == alfabeto.MAIS) return 15;
+            if (caracter == alfabeto.MENOS) return 16;
+            if (caracter == alfabeto.BARRA) return 17;
 
-                if (caracter == alfabeto.ABRE_PARENTESES) return 18;
-                if (caracter == alfabeto.FECHA_PARENTENSES) return 19;
-
-           
-
-               if (caracter == alfabeto.ABRE_COLCHETES) return 20;
-
-
-             if (caracter == alfabeto.ABRE_CHAVES) return 20;
-             if (caracter == alfabeto.FECHA_CHAVES) { return 21; }
-            
+            if (caracter == alfabeto.ABRE_PARENTESES) return 18;
+            if (caracter == alfabeto.FECHA_PARENTENSES) return 19;
+            if (caracter == alfabeto.ABRE_COLCHETES) return 22;
+            if (caracter == alfabeto.ABRE_CHAVES) return 20;
+            if (caracter == alfabeto.FECHA_CHAVES) { return 21; }
             if (caracter == alfabeto.FECHA_COLCHETES) { return 23; }
-                if (caracter == alfabeto.MENOR) return 24;
-                if (caracter == alfabeto.MAIOR) return 25;
-                if (caracter == alfabeto.IGUAL) return 26;
+            if (caracter == alfabeto.MENOR) return 24;
+            if (caracter == alfabeto.MAIOR) return 25;
+            if (caracter == alfabeto.IGUAL) return 26;
 
-                if (caracter == alfabeto.ASPAS_SIMPLES) return 27;
-                if (caracter == alfabeto.ASPAS_DUPLAS) return 28;
+            if (caracter == alfabeto.ASPAS_SIMPLES) return 27;
+            if (caracter == alfabeto.ASPAS_DUPLAS) return 28;
 
-                if (caracter == alfabeto.SOBRE_LINHA) return 29;
+            if (caracter == alfabeto.SOBRE_LINHA) return 29;
 
 
-                //--------------------------------
+            //--------------------------------
 
-                
+
             return 0;
 
         }

@@ -1,34 +1,59 @@
-﻿using CompiladorMGol.Analisador.Auxiliaries;
-using CompiladorMGol.Analisador.Lexico;
+﻿using CompiladorMGol.Analisador.Sintático;
+using CompiladorMGol.Analisador.Auxiliaries;
+using CompiladorMGol.Analisador.Léxico;
+
+//AnalisadorLexico();
+AnalisadorSintatico();
 
 
-//Console.WriteLine("Hello, World!");
+static void AnalisadorLexico(){
 
- class Program
-{
-    private static void Main(string[] args)
+    Lexico lexico = new();
+
+
+    Console.WriteLine("----------------     SAÍDA NA TELA DO COMPUTADOR      ------------");
+    Console.WriteLine();
+    while (!lexico.ParaScanner)
     {
-        Lexico lexico = new();
-
-        //lexico.ImprimeTabelaDeTransicao();
-
-        Console.WriteLine("----------------     SAÍDA NA TELA DO COMPUTADOR      ------------");
-        Console.WriteLine();
-        while (!lexico.ParaScanner)
-        {
-           Console.WriteLine(lexico.Scanner().ToString());
-
-        }
-            Console.WriteLine("-------------------------------------------------------------------");
-
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine();
-
-        //lexico.ImprimeTabelaDeSimbolos();
-
-           
+      //Console.WriteLine(lexico.Scanner());
+      //Console.WriteLine(lexico.Scanner().Classe);
     }
+    Console.WriteLine("-------------------------------------------------------------------");
+    Console.WriteLine();
+    Console.WriteLine();
+    Console.WriteLine();
+    
+    //lexico.ImprimeTabelaDeSimbolos();
+
 }
-//}
+
+static void AnalisadorSintatico(){
+
+    Sintatico sintatico = new();
+    //sintatico.AnaliseAscendenteSR();
+
+     
+}
+
+//Teste();
+
+static void Teste(){
+
+   //TabelaDaGramatica tabela = new();
+    //System.Console.WriteLine(tabela.ToString());
+    
+    Gramatica tabela = new();
+    tabela.Producoes();
+    //tabela.ImprimirProduçoesGramatica();
+
+    //System.Console.WriteLine(tabela.ToString());
+    
+    //System.Console.WriteLine(tabela.Reducoes("r27").ToString());
+    
+
+
+    //tabela.ToString();
+    //tabela.LeTabelaDoArquivoCsv();
+
+}
 
