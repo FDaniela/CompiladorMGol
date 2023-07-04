@@ -1,33 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CompiladorMGol.Analisador.Exceptions;
-
 
 namespace CompiladorMGol.Analisador.Auxiliaries
 {
     public class Gramatica
     {
 
-        private List<Gramatica> regras = new();
-        //Gramatica ra = new();
+        private List<Gramatica> listaDeRegras = new();
         private Arquivo arquivo = new();
-
-        Gramatica? ra;
-
-        public string? Identificador { get; set; }
-        public string? LadoEsquerdo { get; set; }
-        public string[]? LadoDireito { get; set; }
+        Gramatica? gramatica;
+        public string? Identficacao { get; set; }
+        public string? Antecessor { get; set; }
+        public string[]? Sucessor { get; set; }
 
         public Gramatica()
         {
-
-             //Producoes();
-            //ImprimirProduçoesGramatica();
+            //Producoes();
+            //ImprimirProduçoesGLC();
         }
-        //Producoes();
 
         public void Producoes()
         {
@@ -40,35 +29,32 @@ namespace CompiladorMGol.Analisador.Auxiliaries
                     var linha = stream.ReadLine();
                     var valores = linha?.Split("->");
 
-                    ra = new();
-                    ra.Identificador = $"r{id++}";
-                    ra.LadoEsquerdo = valores[0];
-                    ra.LadoDireito = valores[1].Trim().Split(' ');
+                    gramatica = new();
+                    gramatica.Identficacao = $"r{id++}";
+                    gramatica.Antecessor = valores[0];
+                    gramatica.Sucessor = valores[1].Trim().Split(' ');
 
-                    regras.Add(ra);
+                    listaDeRegras.Add(gramatica);
                 }
             }
 
-            //ImprimirProduçoesGramatica();
-
         }
 
-        public Gramatica Reducoes(string acao)
+        public Gramatica Producoes(string acao)
         {
 
-            foreach (var r in regras)
+            foreach (var r in listaDeRegras)
             {
-                if (r.Identificador.Equals(acao.Trim()))
+                if (r.Identficacao.Equals(acao.Trim()))
                     return r;
             }
 
-            throw new ArgumentNullException("Regra não encontrada. Regra: " + acao);
+            throw new RegraExpection();
 
         }
-
-        public int ColunaDaReducao(string classe)
+        public int IdentificadorDaProducao(string classe)
         {
-           // switch (LadoEsquerdo.Trim())
+           // switch (Antecessor.Trim())
             switch (classe)
 
             {
@@ -122,6 +108,8 @@ namespace CompiladorMGol.Analisador.Auxiliaries
                     return 24;
                 case "$":
                     return 25;
+                case "eof":
+                    return 25;
                 case "P":
                     return 26;
                 case "V":
@@ -164,38 +152,28 @@ namespace CompiladorMGol.Analisador.Auxiliaries
                     return -1;
             }
         }
-
-        public void ImprimirProduçoesGramatica()
+        public void ImprimirProduçoesGLC()
         {
-            foreach (var regra in regras)
+            foreach (var regra in listaDeRegras)
             {
 
-                Console.Write($"{regra.Identificador}\t");
-                Console.Write($"{regra.LadoEsquerdo} -->");
-                foreach (var valor in regra.LadoDireito)
+                Console.Write($"{regra.Identficacao}\t");
+                Console.Write($"{regra.Antecessor}->");
+                foreach (var valor in regra.Sucessor)
                 {
-                    Console.Write($"  {valor}");
+                    Console.Write($" {valor}");
                 }
                 Console.WriteLine();
             }
 
         }
 
-        // public override string ToString()
-        // {
+        public override string ToString()
+        {
+            return $"\t{Antecessor}-> {Sucessor.Aggregate((frase, palavra) => frase + " " + palavra)}";
+            //return $"{Identficacao}\t-\t{Antecessor}-> {Sucessor.Aggregate((frase, palavra) => frase + " " + palavra)}";
 
-        //     // var sb = new StringBuilder();
-        //     // foreach (var ra in regras)
-        //     // {
-        //     //     sb.Append(ra.ToString());
-        //     //     sb.Append("\n");
-        //     // }
-        //     // return sb.ToString();
-
-
-        //     var direito = LadoDireito.Aggregate((frase, palavra) => frase + " " + palavra);
-        //     return $"{Identificador.PadLeft(3)} - {LadoEsquerdo.PadLeft(5)} --> {direito}";
-        // }
+        }
 
     }
 }

@@ -4,95 +4,60 @@ namespace CompiladorMGol.Analisador.Auxiliaries
 {
     public class TabelaDaGramatica
     {
-        private readonly string[,] table;
-        private Dictionary<string, int> primeira_linha_tabela = new();
+        private string[,] tabela;
+        private Dictionary<string, int> simbolo = new();
         private Arquivo arquivo = new();
 
         public TabelaDaGramatica()
         {
-            table = LerArquivoCSV(arquivo.LeituraGramatica());
+            tabela = LerArquivoCSV(arquivo.LeituraGramatica());
         }
         private string[,] LerArquivoCSV(StreamReader reader)
         {
             List<string[]> linhas = new List<string[]>();
 
-            int line = 0;
+            int linha = 0;
 
-            var firstLine = reader.ReadLine();
-            var lineVector = firstLine.Split(',');
+            var linhaComSimbolos = reader.ReadLine();
+            var vetorDeSimbolos = linhaComSimbolos.Split(',');
 
-            for (int k = 1; k < lineVector.Length; k++)
+            for (int k = 1; k < vetorDeSimbolos.Length; k++)
             {
-                primeira_linha_tabela.Add(lineVector[k].Trim(), k);
+                simbolo.Add(vetorDeSimbolos[k].Trim(), k);
             }
-
 
             while (!reader.EndOfStream)
             {
-                var linha = reader.ReadLine();
-                var valores = linha.Split(',');
+                var linhaLida = reader.ReadLine();
+                var movimentos = linhaLida.Split(',');
 
-                for (int i = 0; i < valores.Length; i++)
+                for (int i = 0; i < movimentos.Length; i++)
                 {
-                    if (string.IsNullOrEmpty(valores[i]))
+                    if (string.IsNullOrEmpty(movimentos[i]))
                     {
-                        valores[i] = $"E{line}";
+                        movimentos[i] = $"E{linha}";
                     }
                 }
 
-                linhas.Add(valores);
-                line++;
+                linhas.Add(movimentos);
+                linha++;
             }
 
             int numLinhas = linhas.Count;
             int numColunas = linhas[0].Length;
 
-            string[,] matriz = new string[numLinhas, numColunas];
+            string[,]
+            tabelaCompleta = new string[numLinhas, numColunas];
 
             for (int i = 0; i < numLinhas; i++)
-            {
                 for (int j = 0; j < numColunas; j++)
-                {
+                    tabelaCompleta[i, j] = linhas[i][j];
 
-                    matriz[i, j] = linhas[i][j];
-                }
-            }
-            // for (int i = 0; i < numLinhas; i++)
-            // {
-            //     for (int j = 1; j < numColunas; j++)
-            //     {
-            //         Console.Write(matriz[i, j] + ", ");
-            //     }
-            //     Console.WriteLine();
-            // }
-
-            // foreach (var item in primeira_linha_tabela)
-            // {
-            //     Console.WriteLine($"Chave: {item.Key}, Valor: {item.Value}");
-            // }
-
-            return matriz;
+            return tabelaCompleta;
         }
-        public string GetAcao(int linha, int coluna)
+        public string ConsultarSLR(int linhaLida, int coluna)
         {
-            return table[linha, coluna];
-        }
-
-        public override string ToString()
-        {
-            StringBuilder sb = new();
-            int linhas = table.GetLength(0);
-            int colunas = table.GetLength(1);
-
-            for (int i = 0; i < linhas; i++)
-            {
-                for (int j = 1; j < colunas; j++)
-                    sb.Append(table[i, j] + " ");
-                sb.Append("\n");
-            }
-            sb.Append("\n");
-
-            return sb.ToString();
+            return tabela[linhaLida, coluna];
         }
 
     }

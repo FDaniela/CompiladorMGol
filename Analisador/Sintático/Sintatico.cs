@@ -1,137 +1,94 @@
 using CompiladorMGol.Analisador.Auxiliaries;
 using CompiladorMGol.Analisador.Léxico;
-using CompiladorMGol.Analisador.Exceptions;
-using CompiladorMGol.Analisador;
-
 
 namespace CompiladorMGol.Analisador.Sintático
 {
     public class Sintatico
     {
 
-    private TabelaDaGramatica tabelaDaGramatica = new();
-    private Lexico lexico = new();
-    private Gramatica gramatica = new();
-    private Alfabeto alfabeto = new();
-    Stack<int> pilha = new Stack<int>();
-    private bool entradaNaoFoiAceita = true;
-    private bool erroNaoFoiEncontrado = true;
-    private Token?
-     tokenAtual;
-    private Stack<Token> pilhaSemantica = new();
+        private TabelaDaGramatica tabelaDaGramatica = new();
+        private Lexico lexico = new();
+        private Gramatica gramatica = new();
+        Stack<int> pilha = new Stack<int>();
+        private bool entradaAceita = false;
+        private bool rotinaDeErro = false;
+        private Token? token;
 
-   
-
-    public Sintatico(){
-
-        gramatica.Producoes();
-        //gramatica.ImprimirProduçoesGramatica();
-        AnaliseAscendenteSR();
-
-        //System.Console.WriteLine(tabelaDaGramatica.ToString());
-    }
-
-    public void AnaliseAscendenteSR()
-    {
-       // gramatica.Producoes();
-        pilha.Push(0);
-        tokenAtual = lexico.Scanner();
-        //System.Console.WriteLine(gramatica.LadoEsquerdo);
-
-        while (entradaNaoFoiAceita && erroNaoFoiEncontrado)
+        public Sintatico()
         {
-            int estadoAtual_linha = pilha.Peek();
-            //var acao = "oi";
-           //System.Console.WriteLine(estadoAtual_linha);
-           // System.Console.WriteLine("coluna= "+gramatica.ColunaDaReducao());
-           System.Console.WriteLine(tokenAtual.Classe);
-            var acao = tabelaDaGramatica.GetAcao(estadoAtual_linha, gramatica.ColunaDaReducao(tokenAtual.Classe));
-            System.Console.WriteLine(acao);
-            if (EParaEmpilhar(acao))
-            {
-                RealizaAcaoDeShift(acao);
-            }
-            else if (EParaReduzir(acao))
-            {
-                RealizaAcaoDeReducao(acao);
-            }
-            else if (AceitarEntrada(acao))
-            {
-                AceitaEntrada();
-            }
-            else{
-                System.Console.WriteLine("não rolou");
-            }
+
+            gramatica.Producoes();
+            //gramatica.ImprimirProduçoesGramatica();
+            AnaliseAscendenteSR();
+            //System.Console.WriteLine(tabelaDaGramatica.ToString());
         }
-        
-    }
 
-    private void RealizaAcaoDeShift(string acao)
-    {
-        var proximoEstado = ObtemEstadoDaAcao(acao);
-        int proximo_estado = int.Parse(proximoEstado);
-        pilha.Push(proximo_estado);
-        
-        tokenAtual = lexico.Scanner();
-    }
-
-    private void RealizaAcaoDeReducao(string acao)
-    {
-        Gramatica acao_reducao = gramatica.Reducoes(acao);
-        ImprimeAcaoReducao(acao_reducao);
-        DesempilhaSimbolos();
-        var t = pilha.Peek();
-       var nova_acao = tabelaDaGramatica.GetAcao(t, acao_reducao.ColunaDaReducao(acao_reducao.LadoEsquerdo));
-        int novo_estado = int.Parse(nova_acao);
-       pilha.Push(novo_estado);
-       
-
-        void DesempilhaSimbolos()
+        public void AnaliseAscendenteSR()
         {
-            var quantidade_simbolos_desempilhar = acao_reducao.LadoDireito.Length;
-            for (int i = 0; i < quantidade_simbolos_desempilhar; i++)
-                pilha.Pop();
+            pilha.Push(0);
+            token = lexico.Scanner();
+
+            while (!entradaAceita && !rotinaDeErro)
+            {
+                int estado = pilha.Peek();
+
+                // System.Console.WriteLine("["+estado+","+gramatica.IdentificadorDaProducao(token.Classe)+"]");
+
+                var acao = tabelaDaGramatica.ConsultarSLR(estado, gramatica.IdentificadorDaProducao(token.Classe.ToLower()));
+
+                //System.Console.WriteLine("LOG: Ação=" + acao +" pilha= "+estado+ " token-classe " + token.Lexema);
+                //ImprimePilha();
+
+                if ('s'.Equals(acao.Trim().ToCharArray()[0]))
+                {
+                    // System.Console.WriteLine("Empilhou");
+
+                    var goTo = acao.Remove(0, 1);
+                    pilha.Push(int.Parse(goTo));
+                    token = lexico.Scanner();
+
+                }
+                else if ('r'.Equals(acao.Trim().ToCharArray()[0]))
+                {
+                    //System.Console.WriteLine("Reduziu");
+
+                    Gramatica regraReduzida = gramatica.Producoes(acao);
+
+                    Console.WriteLine(regraReduzida.ToString());
+
+                    int desempilhar = regraReduzida.Sucessor.Length;
+                    for (int i = 0; i < desempilhar; i++)
+                        pilha.Pop();
+
+                    var t = pilha.Peek();
+                    var nova_acao = tabelaDaGramatica.ConsultarSLR(t, gramatica.IdentificadorDaProducao(regraReduzida.Antecessor.Trim()));
+                    int novo_estado = int.Parse(nova_acao);
+                    pilha.Push(novo_estado);
+                }
+                else if ("acc".Equals(acao.Trim().ToLower()))
+                {
+                    //System.Console.WriteLine("Aceitou");
+                    entradaAceita = true;
+
+                }
+                else
+                {
+                    //Rotina de recuperação de erro
+                    rotinaDeErro = true;
+                    System.Console.WriteLine("não rolou");
+                }
+            }
+
         }
-    }
-
-    private void ImprimeAcaoReducao(Gramatica acao_reducao)
-    {
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine(acao_reducao.ToString());
-        Console.ResetColor();
-    }
-
-    private void AceitaEntrada()
-    {
-        entradaNaoFoiAceita = false;
-    }
-
-    private string ObtemEstadoDaAcao(string acao)
-    {
-        // Retorna apenas a parte númerica de s3 ou r2.
-        return acao.Trim().Remove(0, 1);
-    }
-
-    private bool EParaEmpilhar(string posicao)
-    {
-        var letra = posicao.Trim().ToCharArray()[0];
-        return 's'.Equals(letra);
-    }
-
-    private bool EParaReduzir(string posicao)
-    {
-        var letra = posicao.Trim().ToCharArray()[0];
-        return 'r'.Equals(letra);
-    }
-
-    private bool AceitarEntrada(string entrada)
-    {
-        return "acc".Equals(entrada.Trim().ToLower()) || "ac".Equals(entrada.Trim().ToLower());
-    }
-
-
-
-
+        private void ImprimePilha()
+        {
+            Console.Write("LOG: Pilha: ");
+            foreach (var p in pilha)
+            {
+                Console.Write($"{p} ");
+            }
+            Console.WriteLine();
+        }
 
     }
 }

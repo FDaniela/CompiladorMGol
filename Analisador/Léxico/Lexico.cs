@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Text;
+﻿using System.Text;
 using CompiladorMGol.Analisador.Auxiliaries;
 using CompiladorMGol.Analisador.Exceptions;
 
@@ -7,30 +6,27 @@ namespace CompiladorMGol.Analisador.Léxico
 {
     public class Lexico
     {
+
         private StreamReader? reader;
         private ErrorLog log = new();
-        private Token token;
-
         private TabelaDeSimbolos tabelaDeSimbolos = new();
         private TabelaDeTrasicao tabelaDeTrasicao = new();
         private Alfabeto alfabeto = new();
         private Arquivo arquivo = new();
-
         public bool ParaScanner { get; set; }
-        public int caracter, linha = 1, coluna = 0;
+        public int linha = 1, coluna = 0;
         long tamanhoArquivo, posicao;
         string palavraAtual = "", palavraBuffer = "";
         bool ignorar, lit = false, com = false;
 
         public Lexico()
         {
-            Scanner();
+            //Scanner();
         }
 
         public Token Scanner()
         {
             reader = arquivo.LeituraArquivo();
-            //LeituraArquivo();
 
             StringBuilder caracterArquivo = new StringBuilder();
             tamanhoArquivo = reader.BaseStream.Length;
@@ -122,7 +118,6 @@ namespace CompiladorMGol.Analisador.Léxico
 
                     Contagem(caractere);
 
-
                     if (char.IsWhiteSpace(caractere) || alfabeto.CaractereEspecial(caractere))
                     {
 
@@ -139,24 +134,6 @@ namespace CompiladorMGol.Analisador.Léxico
                             posicao++;
                         }
 
-
-
-                        // else if ((char)reader.Peek() == '.' &&
-                        //         (alfabeto.CaracterDigito(caractere))
-                        //         )
-                        // {
-                        //     System.Console.WriteLine("here");
-                        //     //System.Console.WriteLine(palavraAtual);
-                        //     palavraAtual += caractere.ToString();
-                        //     palavraAtual += (char)reader.Peek();
-                        //     posicao++;
-                        //    // 
-
-                        //    // posicao++;
-                        //    // return NovoToken(caractere.ToString());
-                        // }
-
-
                         else if (alfabeto.CaractereEspecial(caractere) &&
                                 (char.IsLetterOrDigit((char)reader.Peek()) || char.IsWhiteSpace((char)reader.Peek()))
                                 )
@@ -166,23 +143,18 @@ namespace CompiladorMGol.Analisador.Léxico
                         }
 
                     }
-
                     else
                     {
-
                         palavraAtual += caractere;
-
                     }
                 }
 
                 else
                 {
-
                     palavraAtual += caractere;
                     log.ImprimeErroLexico($"ERRO LÉXICO - Caractere inválido para linguagem MGol.\tLinha {linha}, Coluna {coluna}.");
                     posicao++;
                     return ErroToken(palavraAtual);
-
                 }
 
                 posicao++;
@@ -209,7 +181,6 @@ namespace CompiladorMGol.Analisador.Léxico
             }
 
         }
-
         private Token NovoToken(string lexema)
         {
             palavraAtual = "";
@@ -258,7 +229,7 @@ namespace CompiladorMGol.Analisador.Léxico
                         return Scanner();
                     }
                 case 21:
-                    return new Token("Lit", lexema, "Nulo");
+                    return new Token("lit", lexema, "Nulo");
                 case 99: //trasição não existe
                     {
                         throw new TransicaoException();
@@ -271,7 +242,6 @@ namespace CompiladorMGol.Analisador.Léxico
             throw new NovoTokenExpection();
 
         }
-
         public void Contagem(char caractere)
         {
 
@@ -286,28 +256,24 @@ namespace CompiladorMGol.Analisador.Léxico
             }
 
         }
-
         private Token ErroToken(string lexema)
         {
             palavraAtual = "";
             palavraBuffer = "";
             return new Token("ERRO", lexema, "Nulo");
         }
-
         public void ImprimeErroLexico()
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Error.WriteLine($"ERRO LÉXICO - Caractere inválido para linguagem MGol.\tLinha {linha}, Coluna {coluna}.");
             Console.ResetColor();
         }
-
         public void ImprimeComentario(string msg)
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.Error.WriteLine($"COMENTÁRIO IGNORADO - {msg.PadRight(33)} Linha {linha}, Coluna {coluna}.");
             Console.ResetColor();
         }
-
         public void ImprimeTabelaDeSimbolos()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -320,7 +286,6 @@ namespace CompiladorMGol.Analisador.Léxico
             Console.WriteLine();
             Console.ResetColor();
         }
-
         public void ImprimeTabelaDeTransicao()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;

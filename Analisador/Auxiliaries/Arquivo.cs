@@ -4,10 +4,8 @@ namespace CompiladorMGol.Analisador.Auxiliaries
 {
     public class Arquivo
     {
-
         public StreamReader LeituraArquivo()
         {
-
             try
             {
                 var arquivo = "/home/danfer/Projetos/CompiladorMGol/Analisador/Resource/Codes/Fonte4.alg";
@@ -21,7 +19,6 @@ namespace CompiladorMGol.Analisador.Auxiliaries
 
         public StreamReader LeituraGramatica()
         {
-
             try
             {
                 var arquivo = "/home/danfer/Projetos/CompiladorMGol/Analisador/Resource/Tabela de Análise SLR.csv";
@@ -33,8 +30,9 @@ namespace CompiladorMGol.Analisador.Auxiliaries
             }
         }
 
-        public StreamReader LeituraAlfabeto(){
-             try
+        public StreamReader LeituraAlfabeto()
+        {
+            try
             {
                 var arquivo = "/home/danfer/Projetos/CompiladorMGol/Analisador/Resource/Gramática.txt";
                 return new StreamReader(arquivo);
@@ -44,7 +42,6 @@ namespace CompiladorMGol.Analisador.Auxiliaries
                 throw new LeituraArquivoGramaticaExpection();
             }
         }
-        
         
         // var nomeArquivoCompleto = "CompiladorMGol.Analisador.Resource.Codes.Fonte0.alg";
         // var assembly = Assembly.GetExecutingAssembly();
