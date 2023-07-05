@@ -140,18 +140,21 @@ namespace CompiladorMGol.Analisador.Auxiliaries
 
         private void EstadoFinalNum()
         {
+
             tabela[4, 1] = 1;
             tabela[4, 2] = 1;
             tabela[4, 3] = 3;
             tabela[4, 4] = 3;
             tabela[4, 5] = 6;
             tabela[4, 6] = 6;
+            tabela[4, 7] = 6;
             tabela[4, 9] = 8;
 
             tabela[6, 2] = 4;
             tabela[6, 4] = 4;
 
             tabela[10, 2] = 2;
+            //tabela[10, 0] = 2;
 
             tabela[15, 5] = 5;
             tabela[16, 5] = 5;

@@ -106,6 +106,16 @@ namespace CompiladorMGol.Analisador.Auxiliaries
             return false;
         }
     
+
+        public bool CaracterPonto(Char caracter)
+        {
+            if(caracter == PONTO)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public bool CaracterValido(Char caracter)
         {
             if(CaracterDigito(caracter) || CaractereEspecial(caracter)|| CaracterIgnorados(caracter) || CaracterLetra(caracter)) return true;

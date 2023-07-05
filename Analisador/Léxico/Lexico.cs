@@ -32,8 +32,9 @@ namespace CompiladorMGol.Analisador.Léxico
 
                 char caractere = (char)reader.Read();
 
-                //System.Console.WriteLine($"LOG: Caractere lido = {caractere}");
+                //Console.WriteLine($"LOG: Caractere lido = {caractere}");
                 //System.Console.WriteLine($"LOG: Posicao = {posicao}");
+                //System.Console.WriteLine($"LOG: Palavra = {palavraAtual}");
 
                 if (reader.EndOfStream)
                 {
@@ -113,23 +114,29 @@ namespace CompiladorMGol.Analisador.Léxico
 
                     Contagem(caractere);
 
-                    if (char.IsWhiteSpace(caractere) || alfabeto.CaractereEspecial(caractere))
+                    if (char.IsWhiteSpace(caractere) ||
+                       ((alfabeto.CaractereEspecial(caractere) && !alfabeto.CaracterPonto(caractere)))
+                    )
                     {
 
                         if (!string.IsNullOrEmpty(palavraAtual))
                         {
                             return NovoToken(palavraAtual);
-
                         }
+
                         if (alfabeto.CaractereEspecial(caractere) && alfabeto.CaractereEspecial((char)reader.Peek()))
                         {
-
                             palavraAtual += caractere.ToString();
                             palavraAtual += (char)reader.Peek();
                             posicao++;
                         }
 
-                        else if (alfabeto.CaractereEspecial(caractere) &&
+                        if (alfabeto.CaracterDigito((char)reader.Peek()) && alfabeto.CaracterPonto(caractere))
+                        {
+                            posicao++;
+                        }
+
+                        else if ((alfabeto.CaractereEspecial(caractere)) &&
                                 (char.IsLetterOrDigit((char)reader.Peek()) || char.IsWhiteSpace((char)reader.Peek()))
                                 )
                         {

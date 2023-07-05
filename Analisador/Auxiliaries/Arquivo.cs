@@ -5,13 +5,13 @@ namespace CompiladorMGol.Analisador.Auxiliaries
     public class Arquivo
     {
 
-        private string path = "/home/danfer/Projetos/";
+        private string path = "/home/danfer/Projetos";
 
         public StreamReader LeituraArquivo()
         {
             try
             {
-                var arquivo = path + "/CompiladorMGol/Analisador/Resource/Codes/Fonte4.alg";
+                var arquivo = path + "/CompiladorMGol/Analisador/Resource/Codes/Fonte.alg";
                 return new StreamReader(arquivo);
             }
             catch (Exception)
@@ -45,12 +45,6 @@ namespace CompiladorMGol.Analisador.Auxiliaries
                 throw new LeituraArquivoGramaticaExpection();
             }
         }
-
-        // var nomeArquivoCompleto = "CompiladorMGol.Analisador.Resource.Codes.Fonte0.alg";
-        // var assembly = Assembly.GetExecutingAssembly();
-        // var resourceStream = assembly.GetManifestResourceStream(nomeArquivoCompleto);
-        // var arquivo = resourceStream;
-        // Console.WriteLine(arquivo.ToString());
 
     }
 }
