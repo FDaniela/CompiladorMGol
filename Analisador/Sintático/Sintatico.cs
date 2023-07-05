@@ -9,49 +9,50 @@ namespace CompiladorMGol.Analisador.Sintático
         private TabelaDaGramatica tabelaDaGramatica = new();
         private Lexico lexico = new();
         private Gramatica gramatica = new();
+        private ErrorLog log = new();
         Stack<int> pilha = new Stack<int>();
         private bool entradaAceita = false;
         private bool rotinaDeErro = false;
         private Token? token;
 
+        private int estado, topoDaPilha;
+        private int controle = 0;
+        private string? acao;
+
         public Sintatico()
         {
 
             gramatica.Producoes();
-            //gramatica.ImprimirProduçoesGramatica();
+            //gramatica.ImprimirProduçoesGLC();
             AnaliseAscendenteSR();
-            //System.Console.WriteLine(tabelaDaGramatica.ToString());
         }
 
         public void AnaliseAscendenteSR()
         {
-            pilha.Push(0);
-            token = lexico.Scanner();
 
-            while (!entradaAceita && !rotinaDeErro)
+            controle=0;
+
+            if (!rotinaDeErro)
             {
-                int estado = pilha.Peek();
+                pilha.Push(0);
+                token = lexico.Scanner();
+                rotinaDeErro = false;
+            }
 
-                // System.Console.WriteLine("["+estado+","+gramatica.IdentificadorDaProducao(token.Classe)+"]");
-
-                var acao = tabelaDaGramatica.ConsultarSLR(estado, gramatica.IdentificadorDaProducao(token.Classe.ToLower()));
-
-                //System.Console.WriteLine("LOG: Ação=" + acao +" pilha= "+estado+ " token-classe " + token.Lexema);
-                //ImprimePilha();
+            while (!entradaAceita)
+            {
+                estado = pilha.Peek();
+                acao = tabelaDaGramatica.ConsultarSLR(estado, gramatica.IdentificadorDaProducao(token.Classe.ToLower()));
+                
 
                 if ('s'.Equals(acao.Trim().ToCharArray()[0]))
                 {
-                    // System.Console.WriteLine("Empilhou");
-
                     var goTo = acao.Remove(0, 1);
                     pilha.Push(int.Parse(goTo));
                     token = lexico.Scanner();
-
                 }
                 else if ('r'.Equals(acao.Trim().ToCharArray()[0]))
                 {
-                    //System.Console.WriteLine("Reduziu");
-
                     Gramatica regraReduzida = gramatica.Producoes(acao);
 
                     Console.WriteLine(regraReduzida.ToString());
@@ -60,34 +61,113 @@ namespace CompiladorMGol.Analisador.Sintático
                     for (int i = 0; i < desempilhar; i++)
                         pilha.Pop();
 
-                    var t = pilha.Peek();
-                    var nova_acao = tabelaDaGramatica.ConsultarSLR(t, gramatica.IdentificadorDaProducao(regraReduzida.Antecessor.Trim()));
+                    topoDaPilha = pilha.Peek();
+                    var nova_acao = tabelaDaGramatica.ConsultarSLR(topoDaPilha, gramatica.IdentificadorDaProducao(regraReduzida.Antecessor.Trim()));
                     int novo_estado = int.Parse(nova_acao);
                     pilha.Push(novo_estado);
                 }
                 else if ("acc".Equals(acao.Trim().ToLower()))
                 {
-                    //System.Console.WriteLine("Aceitou");
                     entradaAceita = true;
-
                 }
                 else
                 {
-                    //Rotina de recuperação de erro
-                    rotinaDeErro = true;
-                    System.Console.WriteLine("não rolou");
+                    controle++;
+
+                    if(token!=null)log.ImprimeErroSintatico($"ERRO SINTÁTICO - Token inválido encontrado ({token.Classe}).\tLinha {lexico.linha - 1}, Coluna {lexico.coluna}.");
+                    else log.ImprimeErroSintatico($"ERRO SINTÁTICO - Token inválido encontrado ({token.Classe}).\tLinha {lexico.linha}, Coluna {lexico.coluna}.");
+                    
+                    RotinhaDeRecuperaçãoDeErro();
+
+                    if(controle>50){
+                        System.Console.WriteLine("Análise Encerrada....");
+                        break;
+                    }
+                    
                 }
             }
 
         }
-        private void ImprimePilha()
+
+
+        public void RotinhaDeRecuperaçãoDeErro()
         {
-            Console.Write("LOG: Pilha: ");
-            foreach (var p in pilha)
+            RecuperacaoPorInserção();
+        }
+
+        private void RecuperacaoPorInserção()
+        {
+
+            string tokenEsperado;
+            var tokenEncontrado = token.Classe.ToLower();
+
+            switch (acao.Trim())
             {
-                Console.Write($"{p} ");
+                case "E0":
+                    {
+                        TratamentoDeErro("inicio", tokenEncontrado, 2);
+                        break;
+                    }
+                case "E2":
+                    {
+                        TratamentoDeErro("varinicio", tokenEncontrado, 4);
+                        break;
+                    }
+                case "E4":
+                    {
+                        TratamentoDeErro("varfim", tokenEncontrado, 7);
+                        break;
+                    }
+                case "E30":
+                    {
+                        TratamentoDeErro("ab_p", tokenEncontrado, 66);
+                        break;
+                    }
+
+                case "E69":
+                    {
+                        TratamentoDeErro("entao", tokenEncontrado, 69);
+                        break;
+                    }
+
+                case "E25":
+                    {
+                        TratamentoDeErro("id", tokenEncontrado, 35);
+                        break;
+                    }
+
+                default:
+                    ModoPanico();
+                    break;
             }
-            Console.WriteLine();
+
+        }
+
+        private void TratamentoDeErro(string tokenEsperado, string tokenEncontrado, int valorPilha)
+        {
+            log.ImprimeMensagemRecuperacaoInsercao(tokenEncontrado, tokenEsperado);
+            Token tokenTemporario = new Token(tokenEsperado, tokenEsperado, tokenEsperado);
+            pilha.Push(valorPilha);
+            topoDaPilha = pilha.Peek();
+            acao = tabelaDaGramatica.ConsultarSLR(topoDaPilha, gramatica.IdentificadorDaProducao(tokenEsperado));
+            rotinaDeErro = true;
+            AnaliseAscendenteSR();
+        }
+        private void ModoPanico()
+        {
+            log.ImprimeMensagemModoPanico();
+            while (token.Classe.Trim().ToLower() != "fim" && !PontoDeSincronizacao(token))
+            {
+                token = lexico.Scanner();
+            }
+            rotinaDeErro = true;
+
+        }
+
+        private bool PontoDeSincronizacao(Token token)
+        {
+            var tokenTmp = token.Classe.Trim().ToLower();
+            return tokenTmp == "pt_v";
         }
 
     }

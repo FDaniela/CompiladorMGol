@@ -4,11 +4,14 @@ namespace CompiladorMGol.Analisador.Auxiliaries
 {
     public class Arquivo
     {
+
+        private string path = "/home/danfer/Projetos/";
+
         public StreamReader LeituraArquivo()
         {
             try
             {
-                var arquivo = "/home/danfer/Projetos/CompiladorMGol/Analisador/Resource/Codes/Fonte4.alg";
+                var arquivo = path + "/CompiladorMGol/Analisador/Resource/Codes/Fonte4.alg";
                 return new StreamReader(arquivo);
             }
             catch (Exception)
@@ -21,7 +24,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
         {
             try
             {
-                var arquivo = "/home/danfer/Projetos/CompiladorMGol/Analisador/Resource/Tabela de Análise SLR.csv";
+                var arquivo = path + "/CompiladorMGol/Analisador/Resource/Tabela de Análise SLR.csv";
                 return new StreamReader(arquivo);
             }
             catch (Exception)
@@ -34,7 +37,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
         {
             try
             {
-                var arquivo = "/home/danfer/Projetos/CompiladorMGol/Analisador/Resource/Gramática.txt";
+                var arquivo = path + "/CompiladorMGol/Analisador/Resource/Gramática.txt";
                 return new StreamReader(arquivo);
             }
             catch (Exception)
@@ -42,7 +45,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
                 throw new LeituraArquivoGramaticaExpection();
             }
         }
-        
+
         // var nomeArquivoCompleto = "CompiladorMGol.Analisador.Resource.Codes.Fonte0.alg";
         // var assembly = Assembly.GetExecutingAssembly();
         // var resourceStream = assembly.GetManifestResourceStream(nomeArquivoCompleto);

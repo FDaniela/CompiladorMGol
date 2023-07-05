@@ -19,11 +19,6 @@ namespace CompiladorMGol.Analisador.Léxico
         string palavraAtual = "", palavraBuffer = "";
         bool ignorar, lit = false, com = false;
 
-        public Lexico()
-        {
-            //Scanner();
-        }
-
         public Token Scanner()
         {
             reader = arquivo.LeituraArquivo();
@@ -234,9 +229,8 @@ namespace CompiladorMGol.Analisador.Léxico
                     {
                         throw new TransicaoException();
                     }
-                case 404:
+                case 404: //caracter não reconhecido
                     return Scanner();
-                    //throw new NotImplementedException("caractere não reconhecido pela linguagem MGol");
             }
 
             throw new NovoTokenExpection();

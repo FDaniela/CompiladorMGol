@@ -54,9 +54,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
         }
         public int IdentificadorDaProducao(string classe)
         {
-           // switch (Antecessor.Trim())
             switch (classe)
-
             {
                 case "inicio":
                     return 1;
@@ -170,7 +168,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
 
         public override string ToString()
         {
-            return $"\t{Antecessor}-> {Sucessor.Aggregate((frase, palavra) => frase + " " + palavra)}";
+            return $"{Antecessor}-> {Sucessor.Aggregate((frase, palavra) => frase + " " + palavra)}";
             //return $"{Identficacao}\t-\t{Antecessor}-> {Sucessor.Aggregate((frase, palavra) => frase + " " + palavra)}";
 
         }

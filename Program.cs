@@ -1,5 +1,4 @@
 ﻿using CompiladorMGol.Analisador.Sintático;
-using CompiladorMGol.Analisador.Auxiliaries;
 using CompiladorMGol.Analisador.Léxico;
 
 //AnalisadorLexico();
@@ -45,26 +44,4 @@ static void AnalisadorSintatico()
 
 }
 
-//Teste();
-
-static void Teste()
-{
-
-    //TabelaDaGramatica tabela = new();
-    //System.Console.WriteLine(tabela.ToString());
-
-    Gramatica tabela = new();
-    tabela.Producoes();
-    //tabela.ImprimirProduçoesGramatica();
-
-    //System.Console.WriteLine(tabela.ToString());
-
-    //System.Console.WriteLine(tabela.Reducoes("r27").ToString());
-
-
-
-    //tabela.ToString();
-    //tabela.LeTabelaDoArquivoCsv();
-
-}
 
