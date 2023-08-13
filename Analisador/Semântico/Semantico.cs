@@ -12,7 +12,7 @@ namespace CompiladorMGol.Analisador.Semântico
         private Gerador gerador;
         private ErrorLog log;
         private int variavelTX = 0;
-
+        public bool ErroSemantico { get; set; }
         public Semantico(TabelaDeSimbolos tabelaDeSimbolos, Stack<Token> pilhaSemantica)
         {
             gerador = new();
@@ -72,8 +72,11 @@ namespace CompiladorMGol.Analisador.Semântico
                 case "P":
                     break;
                 default:
-                    log.ImprimeErroSemantico($"ERRO SEMÂNTICO - Regra gramatical \"{gramatica.ToString()}\" inválida encontrada na linha {linha} e coluna {coluna}.");
-                    break;
+                    {
+                        log.ImprimeErroSemantico($"ERRO SEMÂNTICO - Regra gramatical \"{gramatica.ToString()}\" inválida encontrada na linha {linha} e coluna {coluna}.");
+                        ErroSemantico = true;
+                        break;
+                    }
             }
         }
 
@@ -84,7 +87,7 @@ namespace CompiladorMGol.Analisador.Semântico
                 var pt_v = pilhaSemantica.Pop();
                 var varfim = pilhaSemantica.Pop();
 
-                var lv = new Token("LV", "LV", varfim.Tipo);
+                var lv = new Token("LV", "LV", "Nulo");
                 pilhaSemantica.Push(lv);
 
                 gerador.QuebraDeLinha();
@@ -100,41 +103,36 @@ namespace CompiladorMGol.Analisador.Semântico
 
             var d = new Token("D", "D", tipo.Tipo);
             pilhaSemantica.Push(d);
-            gerador.QuebraDeLinhaVariavel();
         }
         private void Regra_L(Gramatica gramatica, Token token)
         {
+            var tipo = pilhaSemantica.Where(p => p.Classe == "TIPO").FirstOrDefault();
 
             if (gramatica.Sucessor.Contains("vir"))
             {
-                var tipo = pilhaSemantica.Where(p => p.Classe == "TIPO").FirstOrDefault();
 
-                var l = pilhaSemantica.Pop();
-                var vig = pilhaSemantica.Pop();
+                var l1 = pilhaSemantica.Pop();
+                var vir = pilhaSemantica.Pop();
                 var id = pilhaSemantica.Pop();
 
-                var l2 = new Token("L", "L", l.Tipo);
-                
                 id.Tipo = tipo.Tipo;
-                
+
                 gerador.ImprimeVariavel($"{tipo.Tipo} {id.Lexema};\n");
-                gerador.QuebraDeLinha();
                 tabelaDeSimbolos.AtualizarToken(id);
-            
-                pilhaSemantica.Push(l2);
+
+                var l = new Token("L", "L", l1.Tipo);
+                pilhaSemantica.Push(l);
             }
             else
             {
-                var tipo = pilhaSemantica.Where(p => p.Classe == "TIPO").FirstOrDefault();
                 var id = pilhaSemantica.Pop();
-
-                var l = new Token("L", "L", id.Tipo);
 
                 id.Tipo = tipo.Tipo;
 
                 gerador.ImprimeVariavel(" " + id.Lexema + ";\n");
-                gerador.QuebraDeLinhaVariavel();
                 tabelaDeSimbolos.AtualizarToken(id);
+
+                var l = new Token("L", "L", id.Tipo);
                 pilhaSemantica.Push(l);
             }
         }
@@ -166,29 +164,32 @@ namespace CompiladorMGol.Analisador.Semântico
                 var id = pilhaSemantica.Pop();
                 var leia = pilhaSemantica.Pop();
 
+                var es = new Token("ES", "ES", id.Tipo);
+                pilhaSemantica.Push(es);
+
                 var idt = tabelaDeSimbolos.BuscarToken(id.Lexema);
                 if (idt != null)
                 {
                     if (idt.Tipo == "literal")
                     {
-                        gerador.ArquivoFinal($"scanf(\"%s\", {idt.Lexema});\n");
+                        gerador.ImprimeCodigo($"scanf(\"%s\",&{idt.Lexema});\n");
                     }
                     else if (idt.Tipo == "int")
                     {
-                        gerador.ArquivoFinal($"scanf(\"%d\", &{idt.Lexema});\n");
+                        gerador.ImprimeCodigo($"scanf(\"%d\",&{idt.Lexema});\n");
                     }
                     else if (idt.Tipo == "double")
                     {
-                        gerador.ArquivoFinal($"scanf(\"%lf\", &{idt.Lexema});\n");
+                        gerador.ImprimeCodigo($"scanf(\"%lf\",&{idt.Lexema});\n");
                     }
                     gerador.QuebraDeLinha();
                 }
                 else
                 {
-                   log.ImprimeErroSemantico($"ERRO SEMÂNTICO - Variável não declarada encontrada na linha {linha} e coluna {coluna}.");
+                    log.ImprimeErroSemantico($"ERRO SEMÂNTICO - Variável não declarada encontrada na linha {linha} e coluna {coluna}.");
+                    ErroSemantico = true;
                 }
-                var es = new Token("ES", "ES", id.Tipo);
-                pilhaSemantica.Push(es);
+
             }
             else if (gramatica.Sucessor.Contains("escreva"))
             {
@@ -197,16 +198,16 @@ namespace CompiladorMGol.Analisador.Semântico
                 var escreva = pilhaSemantica.Pop();
 
                 var es = new Token("ES", "ES", arg.Tipo);
-
                 pilhaSemantica.Push(es);
+
                 if (arg.Tipo == "literal")
-                    gerador.ArquivoFinal($"printf(\"%s\", {arg.Lexema});\n");
+                    gerador.ImprimeCodigo($"printf(\"%s\",{arg.Lexema});\n");
                 else if (arg.Tipo == "int")
-                    gerador.ArquivoFinal($"printf(\"%d\", {arg.Lexema});\n");
+                    gerador.ImprimeCodigo($"printf(\"%d\",{arg.Lexema});\n");
                 else if (arg.Tipo == "double")
-                    gerador.ArquivoFinal($"printf(\"%lf\", {arg.Lexema});\n");
+                    gerador.ImprimeCodigo($"printf(\"%lf\",{arg.Lexema});\n");
                 else
-                    gerador.ArquivoFinal($"printf({arg.Lexema});\n");
+                    gerador.ImprimeCodigo($"printf({arg.Lexema});\n");
                 gerador.QuebraDeLinha();
             }
         }
@@ -223,7 +224,7 @@ namespace CompiladorMGol.Analisador.Semântico
             else if (gramatica.Sucessor.Contains("num"))
             {
                 var num = pilhaSemantica.Pop();
-              
+
                 var arg = new Token("ARG", num.Lexema, num.Tipo);
                 pilhaSemantica.Push(arg);
 
@@ -239,8 +240,8 @@ namespace CompiladorMGol.Analisador.Semântico
                 }
                 else
                 {
-                  log.ImprimeErroSemantico($"ERRO SEMÂNTICO - Variável não declarada encontrada na linha {linha} e coluna {coluna}.");
-
+                    log.ImprimeErroSemantico($"ERRO SEMÂNTICO - Variável não declarada encontrada na linha {linha} e coluna {coluna}.");
+                    ErroSemantico = true;
                 }
             }
 
@@ -251,68 +252,72 @@ namespace CompiladorMGol.Analisador.Semântico
             var ld = pilhaSemantica.Pop();
             var rcb = pilhaSemantica.Pop();
             var id = pilhaSemantica.Pop();
+
+            var cmd = new Token("CMD", "CMD", "Nulo");
+            pilhaSemantica.Push(cmd);
+
             if (id.Tipo != "Nulo")
             {
                 if (id.Tipo == ld.Tipo)
                 {
-                    gerador.ArquivoFinal($"{id.Lexema}={ld.Lexema};\n");
+                    gerador.ImprimeCodigo($"{id.Lexema}={ld.Lexema};\n");
                     gerador.QuebraDeLinha();
                 }
                 else
                 {
                     log.ImprimeErroSemantico($"ERRO SEMÂNTICO -  Tipos diferentes para atribuição encontrados na linha {linha} e coluna {coluna}.");
+                    ErroSemantico = true;
                 }
-                var cmd = new Token("CMD", "CMD", "Nulo");
-                pilhaSemantica.Push(cmd);
             }
             else
             {
                 log.ImprimeErroSemantico($"ERRO SEMÂNTICO -  Variável não declarada encontrada na linha {linha} e coluna {coluna}.");
+                ErroSemantico = true;
             }
+
         }
         private void Regra_LD(Gramatica gramatica, int linha, int coluna)
         {
 
             if (gramatica.Sucessor.Contains("opm"))
             {
-                var oprd1 = pilhaSemantica.Pop();
-                var opa = pilhaSemantica.Pop();
                 var oprd2 = pilhaSemantica.Pop();
+                var opm = pilhaSemantica.Pop();
+                var oprd1 = pilhaSemantica.Pop();
 
                 var t = $"T{variavelTX++}";
 
-                var tmp = ConversorTipo(oprd1);
+                gerador.ImprimeVariaveisTemporarias($"{ConversorTipo(oprd2)} {t};\n");
+                var ld = new Token("LD", t, oprd2.Tipo);
 
-                gerador.ImprimeVariaveisTemporarias($"{tmp} {t};\n");
-                var ld = new Token("LD", t, oprd1.Tipo);
-
-                if (oprd1.Tipo == oprd2.Tipo && oprd1.Tipo != "literal")
+                if (oprd2.Tipo == oprd1.Tipo && oprd2.Tipo != "literal")
                 {
                     pilhaSemantica.Push(ld);
-                    gerador.ArquivoFinal($"{t}={oprd2.Lexema}{opa.Lexema}{oprd1.Lexema};\n");
+                    gerador.ImprimeCodigo($"{t}={oprd1.Lexema}{opm.Lexema}{oprd2.Lexema};\n");
                     gerador.QuebraDeLinha();
                 }
                 else
                 {
                     log.ImprimeErroSemantico($"ERRO SEMÂNTICO -  Operandos com tipos incompatíveis encontrados na linha {linha} e coluna {coluna}.");
+                    ErroSemantico = true;
                 }
             }
             else
             {
                 var oprd = pilhaSemantica.Pop();
-        
-                var ld = new Token("LD", oprd.Lexema, oprd.Tipo);
+                var ld = new Token("LD", oprd.Lexema, ConversorTipo(oprd));
                 pilhaSemantica.Push(ld);
             }
 
         }
         private void Regra_OPRD(Gramatica gramatica, int linha, int coluna)
         {
-            bool eRegra22 = gramatica.Sucessor.Contains("id");
-            if (eRegra22)
+
+            if (gramatica.Sucessor.Contains("id"))
             {
                 var id = pilhaSemantica.Pop();
                 var idt = tabelaDeSimbolos.BuscarToken(id.Lexema);
+
                 if (idt != null)
                 {
                     var oprd = new Token("OPRD", idt.Lexema, idt.Tipo);
@@ -321,6 +326,7 @@ namespace CompiladorMGol.Analisador.Semântico
                 else
                 {
                     log.ImprimeErroSemantico($"ERRO SEMÂNTICO -  Variável não declarada encontrada na linha {linha} e coluna {coluna}.");
+                    ErroSemantico = true;
                 }
             }
             else
@@ -336,49 +342,50 @@ namespace CompiladorMGol.Analisador.Semântico
             var cab = pilhaSemantica.Pop();
             var cond = new Token("COND", "COND", cab.Tipo);
 
-            gerador.QuebraDeLinha();
-            gerador.ArquivoFinal("}\n");
+            gerador.ImprimeCodigo("}\n");
             gerador.QuebraDeLinha();
         }
         private void Regra_CAB()
         {
             var entao = pilhaSemantica.Pop();
             var fc_p = pilhaSemantica.Pop();
-            var ext_r = pilhaSemantica.Pop();
+            var exp_r = pilhaSemantica.Pop();
             var ab_p = pilhaSemantica.Pop();
             var se = pilhaSemantica.Pop();
 
-            var cab = new Token("CAB", "CAB", ext_r.Tipo);
+            var cab = new Token("CAB", "CAB", exp_r.Tipo);
 
             pilhaSemantica.Push(cab);
 
-            gerador.ArquivoFinal($"if({ext_r.Lexema})\n");
+            gerador.ImprimeCodigo($"if({exp_r.Lexema})\n");
             gerador.QuebraDeLinha();
-            gerador.ArquivoFinal("{\n");
+
+            gerador.ImprimeCodigo("{\n");
+            // gerador.Tabulacao();
+            // gerador.TabulacaoN();
             gerador.QuebraDeLinha();
         }
         private void Regra_EXP_R(int linha, int coluna)
         {
             var oprd = pilhaSemantica.Pop();
             var opr = pilhaSemantica.Pop();
-            var oprd2 = pilhaSemantica.Pop();
+            var oprd1 = pilhaSemantica.Pop();
 
             var tx = $"T{variavelTX++}";
-
             gerador.ImprimeVariaveisTemporarias($"{ConversorTipo(oprd)} {tx};\n");
-            
-            var exp_r = new Token("EXR_R", tx, oprd.Tipo);
 
+            var exp_r = new Token("EXR_R", tx, oprd.Tipo);
             pilhaSemantica.Push(exp_r);
 
-            if (oprd.Tipo == oprd2.Tipo)
+            if (oprd.Tipo == oprd1.Tipo)
             {
-                gerador.ArquivoFinal($"{tx}={oprd2.Lexema}{opr.Lexema}{oprd.Lexema};\n");
+                gerador.ImprimeCodigo($"{tx}={oprd1.Lexema}{opr.Lexema}{oprd.Lexema};\n");
                 gerador.QuebraDeLinha();
             }
             else
             {
                 log.ImprimeErroSemantico($"ERRO SEMÂNTICO -  Operandos com tipos incompatíveis encontrados na linha {linha} e coluna {coluna}.");
+                ErroSemantico = true;
             }
 
         }
@@ -387,22 +394,21 @@ namespace CompiladorMGol.Analisador.Semântico
 
             if (gramatica.Sucessor.Contains("fimse"))
             {
-                var cp2 = new Token("CP", "CP", "Nulo");
-                pilhaSemantica.Push(cp2);
+                var cp = new Token("CP", "CP", "Nulo");
+                pilhaSemantica.Push(cp);
             }
             else
             {
-
                 var token1 = pilhaSemantica.Pop();
                 var token2 = pilhaSemantica.Pop();
-                var cp2 = new Token("CP", "CP", token2.Tipo);
-                pilhaSemantica.Push(cp2);
+                var cp = new Token("CP", "CP", token2.Tipo);
+                pilhaSemantica.Push(cp);
             }
         }
 
         private string ConversorTipo(Token token)
         {
-           
+
             if (token.Tipo == "inteiro")
             {
                 return token.Tipo = "int";
@@ -420,7 +426,7 @@ namespace CompiladorMGol.Analisador.Semântico
                 return token.Tipo.ToString();
             }
         }
-        public void FinalisaGeracaoArquivo()
+        public void CriacaoArquivoOBJ()
         {
             gerador.GerarCodigoFinal();
         }

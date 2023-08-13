@@ -38,7 +38,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
             Console.ForegroundColor = ConsoleColor.Yellow;
             //System.Console.WriteLine();
             System.Console.WriteLine("MODO PANICO ATIVO:");
-            System.Console.WriteLine($"O próximo ponto e virgula será buscado para tentar cntinuar a execução do programa.");
+            System.Console.WriteLine($"O próximo ponto e virgula será buscado para tentar continuar a execução do programa.");
             //System.Console.WriteLine();
             Console.ResetColor();
         }

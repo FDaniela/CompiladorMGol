@@ -1,24 +1,19 @@
-using System.Text;
 
 namespace CompiladorMGol.Analisador.Auxiliaries
 {
-
     public class Gerador
     {
-
+        
         private StreamWriter? escritaArquivo;
-        private Registrador erros = new();
-        private Registrador codigo = new();
-        private Registrador variaveis = new();
-        private Registrador temporarias = new();
         private Registrador cabecalho = new();
-
-
+        private Registrador temporarias = new(); 
+        private Registrador variaveis = new();
+        private Registrador codigo = new();
+        
         public Gerador()
         {
             CriacaoArquivoObj();
         }
-
         private void CriacaoArquivoObj()
         {
             var path = "Analisador/Resource/Codes";
@@ -32,47 +27,43 @@ namespace CompiladorMGol.Analisador.Auxiliaries
             escritaArquivo = new StreamWriter(File.Create(filePath));
 
         }
-
-        public void ImprimeVariavel(string vari)
-        {
-            variaveis.Registro(vari);
-            variaveis.RegistroQuebraDeLinha();
-        }
-
-        public void ArquivoFinal(string msg) => codigo.Registro(msg);
-
+        public void ImprimeCodigo(string msg) => codigo.Registro(msg);
+        public void Tabulacao() => codigo.RegistroTab();
+        public void TabulacaoN() => codigo.RemoverTab();
         public void QuebraDeLinha() => codigo.RegistroQuebraDeLinha();
-
         public void QuebraDeLinhaVariavel() => variaveis.RegistroQuebraDeLinha();
-
-        public void ImprimeVariaveisTemporarias(string t)
+        public void ImprimeVariaveisTemporarias(string temp)
         {
-            temporarias.Registro(t);
+            temporarias.Registro(temp);
             temporarias.RegistroQuebraDeLinha();
         }
-
+        public void ImprimeVariavel(string var)
+        {
+            variaveis.Registro(var);
+            variaveis.RegistroQuebraDeLinha();
+        }
         public void GerarCodigoFinal()
         {
     
-            cabecalho.Registro("#include <stdio.h>\n");
+            cabecalho.Registro("#include<stdio.h>\n");
             cabecalho.RegistroQuebraDeLinha();
             cabecalho.Registro("typedef char literal[256];\n");
             cabecalho.RegistroQuebraDeLinha();
             cabecalho.Registro("void main(void)\n");
             cabecalho.RegistroQuebraDeLinha();
-            cabecalho.Registro("{\n");
+            cabecalho.Registro("{");
             cabecalho.RegistroQuebraDeLinha();
 
             escritaArquivo.WriteLine(cabecalho.ToString());
-
+            
 
             escritaArquivo.Write("/*----Variaveis temporarias----*/\n");
             escritaArquivo.Write(temporarias.ToString());
             escritaArquivo.WriteLine("/*------------------------------*/\n");
-
+            
             escritaArquivo.WriteLine(variaveis.ToString());
 
-            codigo.Registro("\n}");
+            codigo.Registro("}");
             codigo.RegistroQuebraDeLinha();
 
             escritaArquivo.Write(codigo.ToString());
@@ -82,7 +73,6 @@ namespace CompiladorMGol.Analisador.Auxiliaries
             escritaArquivo.Flush();
             escritaArquivo.Close();
         }
-
         private void GerarSaidaConsole()
         {
             Console.WriteLine();
@@ -98,5 +88,6 @@ namespace CompiladorMGol.Analisador.Auxiliaries
             Console.WriteLine();
             Console.WriteLine("---------------------------------------------------------------------------");
         }
+    
     }
 }

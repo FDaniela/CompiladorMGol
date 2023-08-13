@@ -2,23 +2,21 @@
 typedef char literal[256];
 void main(void)
 {
-/*----Variaveis temporarias----*/
+ /*----Variaveis temporarias----*/
 int T0;
 int T1;
 int T2;
 int T3;
 int T4;
 /*------------------------------*/
-
 literal A;
 int B;
 int D;
 double C;
-
-printf("Digite B: ");
+printf("Digite B");
 scanf("%d",&B);
-printf("Digite A: ");
-scanf("%s",&A);
+printf("Digite A:");
+scanf("%s",A);
 T0=B>2;
 if(T0)
 {
@@ -37,8 +35,7 @@ B=T4;
 D=B;
 C=5.0;
 printf("\nB=\n");
-printf("%d",D);
-printf("\n");
+printf("%d",D); printf("\n");
 printf("%lf",C);
 printf("\n");
 printf("%s",A);

@@ -11,6 +11,7 @@ namespace CompiladorMGol.Analisador.Sintático
         private Lexico lexico = new();
         private Gramatica gramatica = new();
         List<Gramatica> gramaticas = new List<Gramatica>();
+        List<Token> tokens = new List<Token>();
         private ErrorLog log = new();
         Stack<int> pilha = new Stack<int>();
         private bool entradaAceita = false;
@@ -21,6 +22,8 @@ namespace CompiladorMGol.Analisador.Sintático
         private int estado, topoDaPilha;
         private int controle = 0;
         private string? acao;
+        public bool ErroSintatico { get; set; }
+
 
         public Sintatico()
         {
@@ -30,7 +33,8 @@ namespace CompiladorMGol.Analisador.Sintático
             gramatica.Producoes();
             //gramatica.ImprimirProduçoesGLC(); 
             AnaliseAscendenteSR();
-            //ImprimirRegraGrmatical();
+
+            //ImprimirRegraGramatical();
 
         }
 
@@ -43,6 +47,7 @@ namespace CompiladorMGol.Analisador.Sintático
             {
                 pilha.Push(0);
                 token = lexico.Scanner();
+                tokens.Add(token);
                 rotinaDeErro = false;
             }
 
@@ -55,18 +60,14 @@ namespace CompiladorMGol.Analisador.Sintático
                 {
                     var goTo = acao.Remove(0, 1);
                     pilha.Push(int.Parse(goTo));
-                   // System.Console.WriteLine(token);
+                    // System.Console.WriteLine(token);
                     pilhaSemantica.Push(token);
                     token = lexico.Scanner();
+                    tokens.Add(token);
                 }
                 else if ('r'.Equals(acao.Trim().ToCharArray()[0]))
                 {
                     Gramatica regraGramatical = gramatica.Producoes(acao);
-
-                    Console.ForegroundColor = ConsoleColor.Yellow; 
-                    Console.WriteLine(regraGramatical.ToString());
-                    Console.ResetColor();
-
 
                     //Console.WriteLine(regraGramatical.ToString());
                     gramaticas.Add(regraGramatical);
@@ -94,9 +95,10 @@ namespace CompiladorMGol.Analisador.Sintático
                     if (token != null) log.ImprimeErroSintatico($"ERRO SINTÁTICO - Token inválido encontrado ({token.Classe}).\tLinha {lexico.linha - 1}, Coluna {lexico.coluna}.");
                     else log.ImprimeErroSintatico($"ERRO SINTÁTICO - Token inválido encontrado ({token.Classe}).\tLinha {lexico.linha}, Coluna {lexico.coluna}.");
 
+                    ErroSintatico = true;
                     RotinhaDeRecuperaçãoDeErro();
 
-                    if (controle > 50)
+                    if (controle > 1)
                     {
                         System.Console.WriteLine("Análise Encerrada....");
                         break;
@@ -104,15 +106,11 @@ namespace CompiladorMGol.Analisador.Sintático
 
                 }
             }
-    //  foreach (var item in pilhaSemantica)
-    //         {
-    //             Console.WriteLine(item); // Suponho que você queira imprimir o 'Lexema' do item
-    //         }
+            //ImprimirTokens();
+            //ImprimirRegraGramatical();
+            if (!lexico.ErroLexico && !ErroSintatico && !semantico.ErroSemantico)
+                semantico.CriacaoArquivoOBJ();
 
-            
-            // if(!rotinaDeErro){
-            semantico.FinalisaGeracaoArquivo();
-            //}
         }
 
 
@@ -195,13 +193,36 @@ namespace CompiladorMGol.Analisador.Sintático
             var tokenTmp = token.Classe.Trim().ToLower();
             return tokenTmp == "pt_v";
         }
-
-        public void ImprimirRegraGrmatical()
+        public void ImprimirTokens()
         {
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("-------------------     SAÍDA ANÁLISE LÉXICA      -----------------------");
+            Console.WriteLine();
+            foreach (Token token in tokens)
+            {
+                Console.WriteLine(token);
+            }
+            Console.WriteLine();
+            Console.WriteLine("---------------------------------------------------------------------------");
+            Console.WriteLine();
+            Console.WriteLine();
+        }
+
+        public void ImprimirRegraGramatical()
+        {
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("--------------------     SAÍDA ANÁLISE SINTÁTICA      --------------------");
+            Console.WriteLine();
             foreach (Gramatica gramatica in gramaticas)
             {
-                Console.WriteLine(gramatica); // Aqui você pode imprimir o token ou propriedades específicas dele
+                Console.WriteLine(gramatica);
             }
+            Console.WriteLine();
+            Console.WriteLine("---------------------------------------------------------------------------");
+            Console.WriteLine();
+            Console.WriteLine();
         }
 
 

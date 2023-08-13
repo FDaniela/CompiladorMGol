@@ -7,7 +7,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
 
         private readonly StringBuilder linhaAcumulada;
         private readonly StringBuilder conteudoAcumulado;
-        public string Linha => linhaAcumulada.ToString();
+        int tabAcumulado=0;
 
         public Registrador()
         {
@@ -21,6 +21,19 @@ namespace CompiladorMGol.Analisador.Auxiliaries
         {
             conteudoAcumulado.Append(linhaAcumulada.ToString().TrimStart());
             linhaAcumulada.Clear();
+        }
+        public void RegistroTab()
+        {
+            linhaAcumulada.Append("\t");
+        }
+
+        public void RemoverTab()
+        {
+              int lastIndex = linhaAcumulada.Length - 1;
+            if (lastIndex >= 0 && linhaAcumulada[lastIndex] == '\t')
+            {
+                linhaAcumulada.Length = lastIndex;
+            }
         }
         public override string ToString() => conteudoAcumulado.ToString();
     }

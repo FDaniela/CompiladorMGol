@@ -15,6 +15,7 @@ namespace CompiladorMGol.Analisador.Léxico
         private Alfabeto alfabeto = new();
         private Arquivo arquivo = new();
         public bool ParaScanner { get; set; }
+        public bool ErroLexico { get; set; }
         public int linha = 1, coluna = 0;
         long tamanhoArquivo, posicao;
         string palavraAtual = "", palavraBuffer = "";
@@ -87,6 +88,7 @@ namespace CompiladorMGol.Analisador.Léxico
                     if (!alfabeto.CaracterValido(caractere))
                     {
                         log.ImprimeErroLexico($"ERRO LÉXICO - Caractere inválido para linguagem MGol.\tLinha {linha}, Coluna {coluna}.");
+                        ErroLexico=true;
                         com = true;
                         posicao++;
                         return ErroToken(caractere.ToString());
@@ -160,6 +162,7 @@ namespace CompiladorMGol.Analisador.Léxico
                 {
                     palavraAtual += caractere;
                     log.ImprimeErroLexico($"ERRO LÉXICO - Caractere inválido para linguagem MGol.\tLinha {linha}, Coluna {coluna}.");
+                    ErroLexico=true;
                     posicao++;
                     return Scanner();
                     //return ErroToken(palavraAtual);

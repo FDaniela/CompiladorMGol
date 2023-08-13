@@ -11,7 +11,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
         {
             try
             {
-                var arquivo = path + "/CompiladorMGol/Analisador/Resource/Codes/Fonte3.alg";
+                var arquivo = path + "/CompiladorMGol/Analisador/Resource/Codes/Fonte.alg";
                 return new StreamReader(arquivo);
             }
             catch (Exception)
