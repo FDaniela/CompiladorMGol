@@ -33,9 +33,6 @@ namespace CompiladorMGol.Analisador.Sintático
             gramatica.Producoes();
             //gramatica.ImprimirProduçoesGLC(); 
             AnaliseAscendenteSR();
-
-            //ImprimirRegraGramatical();
-
         }
 
         public void AnaliseAscendenteSR()
@@ -60,7 +57,6 @@ namespace CompiladorMGol.Analisador.Sintático
                 {
                     var goTo = acao.Remove(0, 1);
                     pilha.Push(int.Parse(goTo));
-                    // System.Console.WriteLine(token);
                     pilhaSemantica.Push(token);
                     token = lexico.Scanner();
                     tokens.Add(token);

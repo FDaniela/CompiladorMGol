@@ -26,11 +26,19 @@ namespace CompiladorMGol.Analisador.Semântico
         {
             switch (gramatica.Antecessor.Trim())
             {
+                case "P'":
+                    break;
+                case "P":
+                    break;
+                case "V":
+                    break;
                 case "LV":
                     Regra_LV(gramatica);
                     break;
                 case "TIPO":
                     Regra_TIPO(gramatica, token);
+                    break;
+                case "A":
                     break;
                 case "L":
                     Regra_L(gramatica, token);
@@ -65,11 +73,9 @@ namespace CompiladorMGol.Analisador.Semântico
                 case "CP":
                     Regra_CP(gramatica);
                     break;
-                case "V":
+                case "R":
                     break;
-                case "A":
-                    break;
-                case "P":
+                case "CP_R":
                     break;
                 default:
                     {
@@ -118,6 +124,7 @@ namespace CompiladorMGol.Analisador.Semântico
                 id.Tipo = tipo.Tipo;
 
                 gerador.ImprimeVariavel($"{tipo.Tipo} {id.Lexema};\n");
+
                 tabelaDeSimbolos.AtualizarToken(id);
 
                 var l = new Token("L", "L", l1.Tipo);
@@ -182,6 +189,7 @@ namespace CompiladorMGol.Analisador.Semântico
                     {
                         gerador.ImprimeCodigo($"scanf(\"%lf\",&{idt.Lexema});\n");
                     }
+                    //gerador.Tabulacao
                     gerador.QuebraDeLinha();
                 }
                 else
@@ -208,6 +216,8 @@ namespace CompiladorMGol.Analisador.Semântico
                     gerador.ImprimeCodigo($"printf(\"%lf\",{arg.Lexema});\n");
                 else
                     gerador.ImprimeCodigo($"printf({arg.Lexema});\n");
+
+                //gerador.Tabulacao
                 gerador.QuebraDeLinha();
             }
         }
@@ -261,6 +271,7 @@ namespace CompiladorMGol.Analisador.Semântico
                 if (id.Tipo == ld.Tipo)
                 {
                     gerador.ImprimeCodigo($"{id.Lexema}={ld.Lexema};\n");
+                    //gerador.Tabulacao
                     gerador.QuebraDeLinha();
                 }
                 else
@@ -294,6 +305,7 @@ namespace CompiladorMGol.Analisador.Semântico
                 {
                     pilhaSemantica.Push(ld);
                     gerador.ImprimeCodigo($"{t}={oprd1.Lexema}{opm.Lexema}{oprd2.Lexema};\n");
+                    //gerador.Tabulacao
                     gerador.QuebraDeLinha();
                 }
                 else
@@ -343,6 +355,7 @@ namespace CompiladorMGol.Analisador.Semântico
             var cond = new Token("COND", "COND", cab.Tipo);
 
             gerador.ImprimeCodigo("}\n");
+            //gerador.Tabulacao
             gerador.QuebraDeLinha();
         }
         private void Regra_CAB()
@@ -358,10 +371,12 @@ namespace CompiladorMGol.Analisador.Semântico
             pilhaSemantica.Push(cab);
 
             gerador.ImprimeCodigo($"if({exp_r.Lexema})\n");
+            //gerador.Tabulacao
             gerador.QuebraDeLinha();
 
             gerador.ImprimeCodigo("{\n");
-            // gerador.Tabulacao();
+            //gerador.Tabulacao
+            // //gerador.Tabulacao
             // gerador.TabulacaoN();
             gerador.QuebraDeLinha();
         }
@@ -380,6 +395,7 @@ namespace CompiladorMGol.Analisador.Semântico
             if (oprd.Tipo == oprd1.Tipo)
             {
                 gerador.ImprimeCodigo($"{tx}={oprd1.Lexema}{opr.Lexema}{oprd.Lexema};\n");
+                //gerador.Tabulacao
                 gerador.QuebraDeLinha();
             }
             else

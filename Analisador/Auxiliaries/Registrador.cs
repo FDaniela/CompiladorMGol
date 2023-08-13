@@ -7,12 +7,14 @@ namespace CompiladorMGol.Analisador.Auxiliaries
 
         private readonly StringBuilder linhaAcumulada;
         private readonly StringBuilder conteudoAcumulado;
-        int tabAcumulado=0;
+        private readonly StringBuilder tabAcumulado;
+        int tabQuantidade=0;
 
         public Registrador()
         {
             linhaAcumulada = new StringBuilder();
             conteudoAcumulado = new StringBuilder();
+            tabAcumulado = new StringBuilder();
         }
 
         public void Registro(string msg) => linhaAcumulada.Append(" " + msg);
@@ -25,16 +27,19 @@ namespace CompiladorMGol.Analisador.Auxiliaries
         public void RegistroTab()
         {
             linhaAcumulada.Append("\t");
+            tabQuantidade++;
         }
 
         public void RemoverTab()
         {
-              int lastIndex = linhaAcumulada.Length - 1;
-            if (lastIndex >= 0 && linhaAcumulada[lastIndex] == '\t')
+            tabQuantidade--;
+            int ultimoIndex = linhaAcumulada.Length - 1;
+            if (ultimoIndex >= 0 && linhaAcumulada[ultimoIndex] == '\t')
             {
-                linhaAcumulada.Length = lastIndex;
+                linhaAcumulada.Length = ultimoIndex;
             }
         }
+
         public override string ToString() => conteudoAcumulado.ToString();
     }
 }
