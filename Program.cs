@@ -2,46 +2,47 @@
 using CompiladorMGol.Analisador.Léxico;
 
 //AnalisadorLexico();
-AnalisadorSintatico();
+//AnalisadorSintatico_Semantico();
 
-static void AnalisadorLexico()
-{
+// static void AnalisadorLexico()
+// {
 
-    Lexico lexico = new();
+//     Lexico lexico = new();
 
-    Console.WriteLine();
-    Console.WriteLine();
-    Console.WriteLine("-------------------     SAÍDA ANÁLISE LÉXICA      -----------------------");
-    Console.WriteLine();
-    while (!lexico.ParaScanner)
-    {
-        Console.WriteLine(lexico.Scanner());
-        //Console.WriteLine(lexico.Scanner().Classe);
-    }
-    Console.WriteLine("---------------------------------------------------------------------------");
-    Console.WriteLine();
-    Console.WriteLine();
-    Console.WriteLine();
+//     Console.WriteLine();
+//     Console.WriteLine();
+//     Console.WriteLine("-------------------     SAÍDA ANÁLISE LÉXICA      -----------------------");
+//     Console.WriteLine();
+//     while (!lexico.ParaScanner)
+//     {
+//         Console.WriteLine(lexico.Scanner());
+//         //Console.WriteLine(lexico.Scanner().Classe);
+//     }
+//     Console.WriteLine("---------------------------------------------------------------------------");
+//     Console.WriteLine();
+//     Console.WriteLine();
+//     Console.WriteLine();
 
-    //lexico.ImprimeTabelaDeSimbolos();
+//     //lexico.ImprimeTabelaDeSimbolos();
 
-}
+// }
 
-static void AnalisadorSintatico()
-{
+// static void AnalisadorSintatico_Semantico()
+// {
 
-    Console.WriteLine();
-    Console.WriteLine();
-    Console.WriteLine("--------------------     SAÍDA ANÁLISE SINTÁTICA      --------------------");
-    Console.WriteLine();
+//     Console.WriteLine();
+//     Console.WriteLine();
+//     Console.WriteLine("--------------------     SAÍDA ANÁLISE SINTÁTICA      --------------------");
+//     Console.WriteLine();
+//     Sintatico sintatico = new();
+//     Console.WriteLine();
+//     Console.WriteLine("---------------------------------------------------------------------------");
+//     Console.WriteLine();
+//     Console.WriteLine();
+
+//     //sintatico.AnaliseAscendenteSR();
+
+// }
+
+
     Sintatico sintatico = new();
-    Console.WriteLine();
-    Console.WriteLine("---------------------------------------------------------------------------");
-    Console.WriteLine();
-    Console.WriteLine();
-
-    //sintatico.AnaliseAscendenteSR();
-
-}
-
-

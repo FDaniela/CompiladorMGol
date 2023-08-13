@@ -16,6 +16,13 @@ namespace CompiladorMGol.Analisador.Auxiliaries
             Console.ResetColor();
         }
 
+        public void ImprimeErroSemantico(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine(msg);
+            Console.ResetColor();
+        }
+
         public void ImprimeMensagemRecuperacaoInsercao(string tokenEncontrado, string tokenEsperado)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;

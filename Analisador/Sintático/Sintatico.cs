@@ -1,5 +1,6 @@
 using CompiladorMGol.Analisador.Auxiliaries;
 using CompiladorMGol.Analisador.Léxico;
+using CompiladorMGol.Analisador.Semântico;
 
 namespace CompiladorMGol.Analisador.Sintático
 {
@@ -9,12 +10,14 @@ namespace CompiladorMGol.Analisador.Sintático
         private TabelaDaGramatica tabelaDaGramatica = new();
         private Lexico lexico = new();
         private Gramatica gramatica = new();
+        List<Gramatica> gramaticas = new List<Gramatica>();
         private ErrorLog log = new();
         Stack<int> pilha = new Stack<int>();
         private bool entradaAceita = false;
         private bool rotinaDeErro = false;
         private Token? token;
-
+        private Stack<Token> pilhaSemantica = new();
+        private Semantico semantico;
         private int estado, topoDaPilha;
         private int controle = 0;
         private string? acao;
@@ -22,15 +25,19 @@ namespace CompiladorMGol.Analisador.Sintático
         public Sintatico()
         {
 
+            semantico = new Semantico(lexico.TabelaDeSimbolos, pilhaSemantica);
+
             gramatica.Producoes();
-            //gramatica.ImprimirProduçoesGLC();
+            //gramatica.ImprimirProduçoesGLC(); 
             AnaliseAscendenteSR();
+            //ImprimirRegraGrmatical();
+
         }
 
         public void AnaliseAscendenteSR()
         {
 
-            controle=0;
+            controle = 0;
 
             if (!rotinaDeErro)
             {
@@ -43,28 +50,38 @@ namespace CompiladorMGol.Analisador.Sintático
             {
                 estado = pilha.Peek();
                 acao = tabelaDaGramatica.ConsultarSLR(estado, gramatica.IdentificadorDaProducao(token.Classe.ToLower()));
-                
 
                 if ('s'.Equals(acao.Trim().ToCharArray()[0]))
                 {
                     var goTo = acao.Remove(0, 1);
                     pilha.Push(int.Parse(goTo));
+                   // System.Console.WriteLine(token);
+                    pilhaSemantica.Push(token);
                     token = lexico.Scanner();
                 }
                 else if ('r'.Equals(acao.Trim().ToCharArray()[0]))
                 {
-                    Gramatica regraReduzida = gramatica.Producoes(acao);
+                    Gramatica regraGramatical = gramatica.Producoes(acao);
 
-                    Console.WriteLine(regraReduzida.ToString());
+                    Console.ForegroundColor = ConsoleColor.Yellow; 
+                    Console.WriteLine(regraGramatical.ToString());
+                    Console.ResetColor();
 
-                    int desempilhar = regraReduzida.Sucessor.Length;
+
+                    //Console.WriteLine(regraGramatical.ToString());
+                    gramaticas.Add(regraGramatical);
+
+                    int desempilhar = regraGramatical.Sucessor.Length;
                     for (int i = 0; i < desempilhar; i++)
                         pilha.Pop();
 
                     topoDaPilha = pilha.Peek();
-                    var nova_acao = tabelaDaGramatica.ConsultarSLR(topoDaPilha, gramatica.IdentificadorDaProducao(regraReduzida.Antecessor.Trim()));
+                    var nova_acao = tabelaDaGramatica.ConsultarSLR(topoDaPilha, gramatica.IdentificadorDaProducao(regraGramatical.Antecessor.Trim()));
                     int novo_estado = int.Parse(nova_acao);
                     pilha.Push(novo_estado);
+
+                    semantico.AplicarRegraSemantica(regraGramatical, token, lexico.linha, lexico.coluna);
+
                 }
                 else if ("acc".Equals(acao.Trim().ToLower()))
                 {
@@ -74,19 +91,28 @@ namespace CompiladorMGol.Analisador.Sintático
                 {
                     controle++;
 
-                    if(token!=null)log.ImprimeErroSintatico($"ERRO SINTÁTICO - Token inválido encontrado ({token.Classe}).\tLinha {lexico.linha - 1}, Coluna {lexico.coluna}.");
+                    if (token != null) log.ImprimeErroSintatico($"ERRO SINTÁTICO - Token inválido encontrado ({token.Classe}).\tLinha {lexico.linha - 1}, Coluna {lexico.coluna}.");
                     else log.ImprimeErroSintatico($"ERRO SINTÁTICO - Token inválido encontrado ({token.Classe}).\tLinha {lexico.linha}, Coluna {lexico.coluna}.");
-                    
+
                     RotinhaDeRecuperaçãoDeErro();
 
-                    if(controle>50){
+                    if (controle > 50)
+                    {
                         System.Console.WriteLine("Análise Encerrada....");
                         break;
                     }
-                    
+
                 }
             }
+    //  foreach (var item in pilhaSemantica)
+    //         {
+    //             Console.WriteLine(item); // Suponho que você queira imprimir o 'Lexema' do item
+    //         }
 
+            
+            // if(!rotinaDeErro){
+            semantico.FinalisaGeracaoArquivo();
+            //}
         }
 
 
@@ -169,6 +195,15 @@ namespace CompiladorMGol.Analisador.Sintático
             var tokenTmp = token.Classe.Trim().ToLower();
             return tokenTmp == "pt_v";
         }
+
+        public void ImprimirRegraGrmatical()
+        {
+            foreach (Gramatica gramatica in gramaticas)
+            {
+                Console.WriteLine(gramatica); // Aqui você pode imprimir o token ou propriedades específicas dele
+            }
+        }
+
 
     }
 }

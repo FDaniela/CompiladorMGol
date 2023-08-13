@@ -9,7 +9,8 @@ namespace CompiladorMGol.Analisador.Léxico
 
         private StreamReader? reader;
         private ErrorLog log = new();
-        private TabelaDeSimbolos tabelaDeSimbolos = new();
+        public TabelaDeSimbolos tabelaDeSimbolos = new();
+        public TabelaDeSimbolos TabelaDeSimbolos { get { return this.tabelaDeSimbolos; } } 
         private TabelaDeTrasicao tabelaDeTrasicao = new();
         private Alfabeto alfabeto = new();
         private Arquivo arquivo = new();
@@ -18,6 +19,10 @@ namespace CompiladorMGol.Analisador.Léxico
         long tamanhoArquivo, posicao;
         string palavraAtual = "", palavraBuffer = "";
         bool ignorar, lit = false, com = false;
+
+        public Lexico(){
+           // tabelaDeSimbolos = new();
+        }
 
         public Token Scanner()
         {
@@ -156,7 +161,8 @@ namespace CompiladorMGol.Analisador.Léxico
                     palavraAtual += caractere;
                     log.ImprimeErroLexico($"ERRO LÉXICO - Caractere inválido para linguagem MGol.\tLinha {linha}, Coluna {coluna}.");
                     posicao++;
-                    return ErroToken(palavraAtual);
+                    return Scanner();
+                    //return ErroToken(palavraAtual);
                 }
 
                 posicao++;
@@ -167,7 +173,6 @@ namespace CompiladorMGol.Analisador.Léxico
 
             throw new RetornoScannerExpection();
         }
-
         private Token? ExisteToken(string lexema)
         {
 
