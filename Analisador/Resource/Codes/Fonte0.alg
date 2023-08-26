@@ -1,10 +1,10 @@
 inicio
     varinicio
         literal A;
-        inteiro B,D;
-        real C ;
+        inteiro B, D, E;
+        real C;
     varfim;
-    escreva "Digite B";
+    escreva "Digite B:";
     leia B;
     escreva "Digite A:";
     leia A;
@@ -19,7 +19,12 @@ inicio
     B<-B+2;
     B<-B+3;
     D<-B;
-    C<-5.0;
+    C<-5;
+    repita (B<5)
+        C<-B+2;
+        escreva C;
+        B<-B+1;
+    fimrepita
     escreva "\nB=\n";
     escreva D;
     escreva "\n";

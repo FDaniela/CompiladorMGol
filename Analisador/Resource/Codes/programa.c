@@ -11,13 +11,14 @@ int T4;
 /*------------------------------*/
 
 literal A;
-int B;
+int E;
 int D;
+int B;
 double C;
 
-printf("Digite B: ");
+printf("Digite B:");
 scanf("%d",&B);
-printf("Digite A: ");
+printf("Digite A:");
 scanf("%s",&A);
 T0=B>2;
 if(T0)

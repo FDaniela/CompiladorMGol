@@ -239,7 +239,7 @@ namespace CompiladorMGol.Analisador.Léxico
                         return Scanner();
                     }
                 case 21:
-                    return new Token("lit", lexema, "Nulo");
+                    return new Token("Lit", lexema, "Nulo");
                 case 99: //trasição não existe
                     {
                         throw new TransicaoException();

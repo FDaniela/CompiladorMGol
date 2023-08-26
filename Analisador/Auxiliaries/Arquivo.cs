@@ -5,13 +5,14 @@ namespace CompiladorMGol.Analisador.Auxiliaries
     public class Arquivo
     {
 
-        private string path = "/home/danfer/Projetos";
+        private string path = Directory.GetCurrentDirectory().ToString();
 
         public StreamReader LeituraArquivo()
         {
             try
             {
-                var arquivo = path + "/CompiladorMGol/Analisador/Resource/Codes/Fonte.alg";
+
+                var arquivo = path + "/Analisador/Resource/Codes/Fonte.alg";
                 return new StreamReader(arquivo);
             }
             catch (Exception)
@@ -24,7 +25,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
         {
             try
             {
-                var arquivo = path + "/CompiladorMGol/Analisador/Resource/Tabela de Análise SLR.csv";
+                var arquivo = path + "/Analisador/Resource/Tabela de Análise SLR.csv";
                 return new StreamReader(arquivo);
             }
             catch (Exception)
@@ -37,7 +38,7 @@ namespace CompiladorMGol.Analisador.Auxiliaries
         {
             try
             {
-                var arquivo = path + "/CompiladorMGol/Analisador/Resource/Gramática.txt";
+                var arquivo = path + "/Analisador/Resource/Gramática.txt";
                 return new StreamReader(arquivo);
             }
             catch (Exception)
