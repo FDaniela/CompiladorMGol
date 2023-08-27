@@ -27,13 +27,14 @@ Esta etapa visa o desenvolvimento do analisador semântico e geração de códig
 # Arquitetura Geral
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/d4732eb4-f977-44cf-9d29-3d0c4e4dc7c5">
-</p>
+  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/1c7c4241-4c53-49a5-9d47-cb9cf450b72c">
+</p>!
+
 
 Ao final de todos teremos como sistema e resultado do estudo de caso, um pequeno compilador que compilará o programa fonte (linguagem Mgol), Fonte.ALG (a) em PROGRAMA.C (b).
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/84f61310-0784-4b41-9466-e6bf4ec008cc">
+  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/4ced8373-8ec7-4340-910b-cda62c43a684">
 </p>
 
 ---
