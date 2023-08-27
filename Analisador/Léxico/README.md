@@ -1,9 +1,8 @@
 # Analisador Léxico
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/fad7f3e1-bfb7-45ca-bc0b-0af36f939363" alt="Descrição da imagem">
+  <img src=https://github.com/FDaniela/CompiladorMGol/assets/102395421/e5b8a336-da76-45ec-9b22-477146e24b7f >
 </p>
-
 
 ## Descrição
 
@@ -57,7 +56,7 @@ Desenvolver um programa computacional na linguagem escolhida que implemente:
 O Scanner deverá ler todo o texto fonte realizando todas as tarefas especificadas na seção 4. O resultado esperado é a emissão na saída padrão de todos os TOKENs reconhecidos. Observe o desenho abaixo, nela é apresentada uma amostra da saída do programa a ser desenvolvido.
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/abe4b382-6941-42d0-89f9-5aeed9de53a4" alt="Descrição da imagem">
+  <img src=https://github.com/FDaniela/CompiladorMGol/assets/102395421/b4699cb8-2846-4c43-8d60-5c79cc11ef87>
 </p>
 
 
@@ -73,7 +72,7 @@ O Scanner deverá ler todo o texto fonte realizando todas as tarefas especificad
 O autômato finito determinístico, no formato diagrama de estados, que reconheça os padrões dos tokens da linguagem Mgol.
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/0149cbff-c6af-4c3d-bca1-232bb218180a" alt="Descrição da imagem">
+  <img src=https://github.com/FDaniela/CompiladorMGol/assets/102395421/e8cc7a56-671e-4b6e-b348-7875a5f999d2>
 </p>
 
 
