@@ -5,7 +5,7 @@ Este repositório tem como objetivo o desenvolvimento de um compilador que receb
 Este repositório tem como objetivo o desenvolvimento de um compilador que aceitará como entrada um arquivo fonte escrito na linguagem de programação Mgol (uma linguagem criada especificamente para este estudo de caso). O compilador passará pelas etapas de análise e síntese, produzindo como saída um arquivo objeto na linguagem C. Esse arquivo resultante estará pronto para ser compilado e executado em um compilador C, ou seja, o código gerado será completo e funcional para fins de compilação e execução.
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/276b3c60-d55a-40ac-ba28-03f1b7a3229b" alt="Descrição da imagem">
+  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/52a7459d-ab8b-4dd1-b908-094655759615">
 </p>
 
 Os módulos a serem implementados contemplam:
@@ -27,13 +27,13 @@ Esta etapa visa o desenvolvimento do analisador semântico e geração de códig
 # Arquitetura Geral
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/d4732eb4-f977-44cf-9d29-3d0c4e4dc7c5" alt="Descrição da imagem">
+  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/d4732eb4-f977-44cf-9d29-3d0c4e4dc7c5">
 </p>
 
 Ao final de todos teremos como sistema e resultado do estudo de caso, um pequeno compilador que compilará o programa fonte (linguagem Mgol), Fonte.ALG (a) em PROGRAMA.C (b).
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/84f61310-0784-4b41-9466-e6bf4ec008cc" alt="Descrição da imagem">
+  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/84f61310-0784-4b41-9466-e6bf4ec008cc">
 </p>
 
 ---
