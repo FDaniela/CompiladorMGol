@@ -1,10 +1,11 @@
 # Analisador Semântico
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/973210db-8cfa-4885-9c01-dd83f109834f">
+  <img src=https://github.com/FDaniela/CompiladorMGol/assets/102395421/c2edc881-2959-41d7-a8f9-8a861a7063fa>
 </p>
 
 ## Descrição
+
 
 3.1 O símbolo “–” em ações semânticas indica que não há regra semântica associada.
 
@@ -50,11 +51,12 @@ O Parser realizará o processo de análise sintática e invocará o semântico q
 - Se não houver nenhum erro léxico, sintático ou semântico, um PROGRAMA.C será gerado. Caso ocorra pelo menos um erro, a fase de análise continua, porém o arquivo .obj não será criado.
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/ea5b6be4-f949-4606-b6e7-c901f034daac">
+
+  <img src=https://github.com/FDaniela/CompiladorMGol/assets/102395421/b1c9a447-954a-40d8-bb56-04bceeba109d>
 </p>
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/efb15c90-ce91-4f6c-819d-52370539f0e8" alt="Descrição da imagem">
+  <img src=https://github.com/FDaniela/CompiladorMGol/assets/102395421/d623327c-3fd6-4262-a60c-ac4512775ad8>
 </p>
 
 
