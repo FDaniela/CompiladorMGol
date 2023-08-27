@@ -1,7 +1,7 @@
-# Analisador Léxico
+# Analisador Sintático
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/dc0c2e9e-5db2-4481-ac8f-05812af66144" alt="Descrição da imagem">
+  <img src=https://github.com/FDaniela/CompiladorMGol/assets/102395421/283175c9-fe6f-427d-a545-92be73815dfc>
 </p>
 
 ## Descrição
@@ -19,7 +19,7 @@
 **Algoritmo de Análise Sintática:**
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/c39117f0-f340-4f02-b376-d93768b09d79" alt="Descrição da imagem">
+  <img src=https://github.com/FDaniela/CompiladorMGol/assets/102395421/0542c566-60fb-4f4e-9a60-0b00ef54bbbb>
 </p>
 
 3.3 **Implementação do Algoritmo de Análise Sintática Shift-Reduce (PARSER):**
@@ -54,6 +54,5 @@ O **PARSER** realizará o processo de análise sintática:
 - Reestabelecendo a análise para que o restante do código fonte seja analisado.
 
 <p align="center">
-  <img src="https://github.com/FDaniela/CompiladorMGol/assets/102395421/c3eb98a9-a6e9-4283-a90c-40c2fdc9e887" alt="Descrição da imagem">
+  <img src=https://github.com/FDaniela/CompiladorMGol/assets/102395421/dd6e9278-6453-4d95-aaa7-e0607e5b29c1>
 </p>
-
